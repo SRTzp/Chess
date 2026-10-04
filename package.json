@@ -1,0 +1,21 @@
+{
+  "name": "chessia-shrine",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.25.0",
+  "scripts": {
+    "dev": "vite --config vite.config.ts --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build --config vite.config.ts && vite build --config chapter.vite.config.ts",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "chapter": "vite --config chapter.vite.config.ts",
+    "build:pages": "tsc --noEmit && vite build --config pages.vite.config.ts"
+  },
+  "dependencies": {
+    "phaser": "3.90.0"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "vite": "7.1.7",
+    "tsx": "4.20.6"
+  }
+}
