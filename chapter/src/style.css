@@ -23,3 +23,6 @@ footer{padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));padding-left:
 }
 
 .chapter-tabs{display:flex;justify-content:center;gap:10px;background:#173c2e;padding:5px 10px;border-bottom:1px solid #82905f}.chapter-tabs button{padding:5px 15px;font-size:12px;min-height:44px}.chapter-tabs [aria-pressed="true"]{background:#efce7d;color:#234735;border-color:#ffeeb3}
+#chess-lab{white-space:nowrap;font-size:12px;border-color:#d4b96f;color:#ffdf94}
+@media(max-width:650px){#chess-lab{grid-column:1/-1;grid-row:3;width:100%;min-height:40px;padding:6px}}
+.visual-controls{position:absolute;right:12px;bottom:12px;z-index:5;display:flex;gap:6px}.visual-controls button{min-height:44px;background:#f0d083;color:#173b2e;border:2px solid #fff1bd;font-size:12px;font-weight:800}.visual-controls [hidden]{display:none}.cell.visual-preview{outline:4px dashed #ffe292;outline-offset:-5px;background:#ffe29224}@media(max-width:650px){.visual-controls{right:8px;bottom:37px}.visual-controls button{font-size:11px;padding:7px}}

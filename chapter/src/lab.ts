@@ -1,0 +1,86 @@
+import {lessons as originalLessons} from './rules';
+import {Voice} from './speech';
+import {lessons} from './engine/lessons';
+import {Session} from './engine/session';
+import {canOpenLesson,earnedBadges,freshProgress,nextLesson,restoreProgress,villageComplete,worlds,type CampaignProgress} from './engine/campaign';
+import {input,type InputMove,type OpponentTier,type Square} from './engine/chess';
+import {TeachingOverlay,algebraicPoint,type VisualMove} from './visual-path';
+import './lab.css';
+type Profile='akin'|'prin';
+const key='chessia-campaign-v2',oldKey='chessia-lab-v1';
+const glyphs:Record<string,string>={wk:'♔',wq:'♕',wr:'♖',wb:'♗',wn:'♘',wp:'♙',bk:'♚',bq:'♛',br:'♜',bb:'♝',bn:'♞',bp:'♟'};
+const records:Partial<Record<Profile,CampaignProgress>>={};
+try{const current=JSON.parse(localStorage.getItem(key)||'{}'),old=JSON.parse(localStorage.getItem(oldKey)||'{}');for(const id of ['akin','prin'] as Profile[]){if(current[id]||old[id])records[id]=restoreProgress(current[id],old[id]);}}catch{}
+function iconFor(id:string){if(id==='mate-light')return'🐉';if(id.startsWith('rook'))return'♖';if(id.startsWith('bishop'))return'♗';if(id.startsWith('queen'))return'♕';if(id.startsWith('king')||id.startsWith('castle'))return'♔';if(id.startsWith('promotion')||id.startsWith('en-passant'))return'♙';if(id.includes('fork'))return'♘';return'✦';}
+export function createLab(goOriginal:(level:number)=>void,voice:Voice,onClose:()=>void){
+ const root=document.createElement('section');root.id='chess-lab-panel';root.hidden=true;root.innerHTML=`<div class="lab-shell"><header><div><small>CHESSIA · ADVENTURE MAP</small><h2>The Knight and Toothless</h2></div><button id="lab-close" aria-label="Return to the village">✕</button></header><p id="lab-profile"></p><p id="lab-badges" aria-label="Adventure badges"></p><div class="lab-layout"><nav id="lab-lessons" aria-label="Adventure map"></nav><div class="lab-play"><h3 id="lab-title"></h3><p id="lab-story"></p><p id="lab-status" aria-live="polite"></p><div id="lab-board" role="group" aria-label="Chess board"></div><button id="lab-skip-demo" hidden>Skip demo →</button><button id="lab-repeat-demo" hidden>↻ Replay demo</button><div id="lab-promotion" role="group" aria-label="Choose a new piece" hidden><strong>Choose your new piece</strong><div><button data-promotion="q" aria-label="Promote to Winged Guardian">♕ Guardian</button><button data-promotion="r" aria-label="Promote to Rook">♖ Rook</button><button data-promotion="b" aria-label="Promote to Bishop">♗ Bishop</button><button data-promotion="n" aria-label="Promote to Knight">♘ Knight</button><button data-promotion="cancel">Cancel</button></div></div><div class="lab-actions"><button id="lab-hint">🐉 Help me</button><button id="lab-listen">♫ Listen</button><button id="lab-sound">Sound on</button><button id="lab-undo">↶ Undo</button><button id="lab-restart">↻ Try again</button><button id="lab-next">Next quest →</button></div><p id="lab-help" aria-live="polite"></p><p class="lab-small">♙ Pawn · ♘ Knight · ♗ Bishop · ♖ Rook · ♕ Winged Guardian (queen moves) · ♔ King. Tap a piece, then a square. In Apply quests, tap the destination again to move. Help brings back the path. No timer or hint penalty.</p></div></div></div>`;
+ document.body.append(root);
+ const $=<T extends HTMLElement=HTMLElement>(id:string)=>root.querySelector<T>('#'+id)!;
+ const nav=$('lab-lessons'),board=$('lab-board');
+ const overlay=new TeachingOverlay(board,p=>board.querySelector<HTMLButtonElement>(`button[aria-label^="${String.fromCharCode(97+p.x)}${8-p.y}"]`));
+ let profile:Profile|null=null,session:Session|null=null,selected:Square|null=null,promotionPick:{from:Square;to:Square}|null=null,preview:{from:Square;to:Square}|null=null,busy=false,demoActive=false,demoShown=false,visualHelp=0,serial=0,oldDone:boolean[]=Array(12).fill(false),feedback='';
+ const reduceMotion=()=>matchMedia('(prefers-reduced-motion: reduce)').matches||document.querySelector<HTMLInputElement>('#motion')?.checked===true;
+ function visualFor(from:Square,to:Square):VisualMove|null{if(!session)return null;const move=session.chess.moves({square:from,verbose:true}).find(m=>m.to===to);return move?{from:algebraicPoint(from),to:algebraicPoint(to),piece:move.piece,capture:!!move.captured}:null;}
+ function clearVisual(){overlay.cancel();preview=null;if(demoActive){demoActive=false;busy=false;}$('lab-skip-demo').hidden=true;}
+ let pending:{id:number;resolve:(move:InputMove|null)=>void}|null=null;
+ const newWorker=()=>{const w=new Worker(new URL('./engine/opponent.worker.ts',import.meta.url),{type:'module'});w.onmessage=(e:MessageEvent<{id:number;move:InputMove|null}>)=>{if(pending?.id===e.data.id){pending.resolve(e.data.move);pending=null;}};w.onerror=()=>{pending?.resolve(null);pending=null;w.terminate();if(worker===w)worker=newWorker();};return w;};
+ let worker=newWorker();
+ function cancelWork(){serial++;clearVisual();pending?.resolve(null);pending=null;worker.terminate();worker=newWorker();}
+ const unlocked=()=>villageComplete(oldDone);
+ const progress=()=>records[profile!]?.done??[];
+ function close(){cancelWork();root.hidden=true;selected=null;promotionPick=null;busy=false;voice.stop();document.getElementById('app')!.inert=false;document.getElementById('chess-lab')?.focus();onClose();}
+ function save(){if(!profile)return;const current=records[profile]??freshProgress();if(session?.finished&&session.lesson&&!current.done.includes(session.lesson.id))current.done.push(session.lesson.id);if(session?.mode==='game'&&session.chess.isCheckmate()&&session.chess.turn()==='b'&&current.session?.match.moves.length!==session.chess.history().length)current.wins++;
+  current.session=session?.save()??null;records[profile]=current;try{localStorage.setItem(key,JSON.stringify(records));}catch{$('lab-help').textContent='Save unavailable. Keep this page open.';}}
+ function start(id?:string,tier:OpponentTier='gentle'){if(!unlocked())return;cancelWork();busy=false;selected=null;promotionPick=null;demoShown=false;visualHelp=0;feedback='';session=new Session(lessons.find(l=>l.id===id),tier);save();render();nav.querySelector('.active')?.scrollIntoView({block:'nearest'});voice.say([session.lesson?.story??'Play a full game with Toothless watching. Keep your king safe!',session.hint].filter(Boolean).join(' '));}
+ function worldBadges(){return[...(oldDone.slice(0,6).every(Boolean)?['♙ Pawn Valley']:[]),...(villageComplete(oldDone)?['♘ Knight Bridge']:[]),...earnedBadges(progress())].join(' · ');}
+ function describe(){if(!unlocked())return'Finish Pawn Valley and Knight Bridge to open the next world.';if(!session)return'Choose a quest on the map.';if(session.finished)return'★ Quest complete! Toothless found the next path.';const end=session.end;if(end==='checkmate')return session.turn==='w'?'Checkmate. Try Undo or Try again.':'Checkmate! The kingdom is safe!';if(end==='stalemate'||end==='repetition'||end==='fifty-move'||end==='insufficient')return`Draw: ${end}. Try another plan.`;if(end==='check')return session.turn==='w'?'Your king is in check.':'The other king is in check.';if(session.onFinalStep)return'The guard moved. Find your second move.';if(session.lesson&&session.turn==='w'&&session.chess.history().length>=2)return'Try Undo and a new plan, or keep looking for a safe path.';return busy?'The guard is thinking…':session.turn==='w'?'Your turn.':'Guard’s turn.';}
+ function buildMap(){const scroll=nav.scrollTop;nav.replaceChildren();const add=(label:string)=>{const h=document.createElement('h4');h.textContent=label;nav.append(h);};add('Village Memories');for(let i=0;i<originalLessons.length;i++){const b=document.createElement('button');b.dataset.original=String(i);b.textContent=`${oldDone[i]?'★ ':'🔒 '}${i+1}. ${originalLessons[i].title}`;b.disabled=i>0&&!oldDone[i-1];nav.append(b);}let begin=0;for(const world of worlds){add(`${world.icon} ${world.name}`);for(let i=begin;i<world.end;i++){const l=lessons[i],b=document.createElement('button'),open=canOpenLesson(i,oldDone,progress());b.dataset.lesson=l.id;b.textContent=`${progress().includes(l.id)?'★ ':open?'':'🔒 '}${iconFor(l.id)} ${l.title}`;b.disabled=!open;b.classList.toggle('done',progress().includes(l.id));b.classList.toggle('active',session?.lesson?.id===l.id);nav.append(b);}begin=world.end;}add('♔ Full Chess Game');for(const tier of ['gentle','steady','challenge'] as OpponentTier[]){const b=document.createElement('button');b.dataset.tier=tier;b.textContent=`♔ Play ${tier}`;b.disabled=!unlocked()||!progress().includes(lessons.at(-1)!.id);b.classList.toggle('active',session?.mode==='game'&&session.tier===tier);nav.append(b);}nav.scrollTop=scroll;}
+ function render(){
+  buildMap();$('lab-profile').textContent=`${profile==='akin'?'Akin':'Prin'} · ${oldDone.filter(Boolean).length}/12 village quests · ${progress().length}/${lessons.length} new quests`;
+  $('lab-badges').textContent=(worldBadges()||'Badges appear as you free each world.')+(records[profile!]?.wins?` · ♔ ${records[profile!]!.wins} full-game win${records[profile!]!.wins===1?'':'s'}`:'');
+  $('lab-title').textContent=session?.lesson?.title??(session?'Full Chess Game':'The next world waits');
+  $('lab-story').textContent=session?.lesson?.story??(session?'Play a full game with Toothless watching. Keep your king safe!':unlocked()?'Choose your next quest.':'Complete the village bridge first.');
+  $('lab-status').textContent=promotionPick?'Choose a piece to finish your pawn move.':preview?'Path preview. Tap the same landing square again to move.':demoActive?'Watch the path, then try the move yourself.':describe();
+  $<HTMLElement>('lab-promotion').hidden=!promotionPick;overlay.cancel();board.replaceChildren();
+  if(session){const stage=session.lesson?.ladder,showTargets=!stage||stage==='discover'||stage==='apply'||stage==='plan'||visualHelp>0;
+   const allowed=selected&&showTargets?session.chess.moves({square:selected,verbose:true}).map(m=>m.to):[];
+   for(let rank=8;rank>=1;rank--)for(const file of 'abcdefgh'){
+    const sq=(file+rank) as Square,p=session.chess.get(sq),button=document.createElement('button');
+    button.className=`lab-square ${(rank+(file.charCodeAt(0)-97))%2?'dark':'light'}`;
+    if(p)button.classList.add(p.color==='w'?'white-piece':'black-piece');
+    if(allowed.includes(sq))button.classList.add('target');if(selected===sq)button.classList.add('selected');if(preview?.to===sq)button.classList.add('preview');
+    button.textContent=p?glyphs[p.color+p.type]:'';button.setAttribute('aria-label',`${sq}${p?' '+(p.color==='w'?'White':'Black')+' '+p.type:''}`);
+    button.disabled=!unlocked()||busy||!!promotionPick||session.finished||session.chess.isGameOver()||session.turn!=='w';button.onclick=()=>void choose(sq);board.append(button);
+   }
+  }
+  $<HTMLButtonElement>('lab-undo').disabled=!session||!demoActive&&!session.chess.history().length;$<HTMLButtonElement>('lab-hint').disabled=!session?.lesson||session.finished||demoActive;
+  $<HTMLButtonElement>('lab-restart').disabled=!session;$<HTMLButtonElement>('lab-next').hidden=!session?.finished||!session.lesson;
+  $('lab-sound').textContent=voice.enabled?'Sound on':'Sound off';$('lab-help').textContent=feedback||session?.hint||'';
+  $('lab-repeat-demo').hidden=!session?.lesson||session.lesson.ladder!=='discover'||!demoShown||session.finished;
+  $<HTMLButtonElement>('lab-repeat-demo').disabled=busy;
+  if(preview){const spec=visualFor(preview.from,preview.to);if(spec)overlay.show(spec,'preview',reduceMotion());}
+  else if(selected&&(visualHelp>=2||session?.lesson?.ladder==='discover'&&demoShown)){const suggested=session?.teachingMove;if(suggested?.from===selected){const spec=visualFor(suggested.from,suggested.to);if(spec)overlay.show(spec,'hint',reduceMotion());}}
+ }
+ async function showDemo(sq:Square){const suggestion=session?.teachingMove;if(!suggestion||suggestion.from!==sq)return;const spec=visualFor(suggestion.from,suggestion.to);if(!spec)return;demoShown=true;const line=spec.piece==='n'?'Two… then one! One jump. Over pieces. Land on a free square or an enemy.':spec.piece==='p'?spec.capture?'Diagonal to free a guard. One move.':'Straight ahead. One move.':'Watch the path. Now you try.';
+  if(reduceMotion()){render();overlay.show(spec,'demo',true);voice.say(line);return;}
+  demoActive=true;busy=true;render();$('lab-skip-demo').hidden=false;voice.say(line);const token=serial,shown=await overlay.demonstrate(spec,false);if(!shown||token!==serial||root.hidden)return;demoActive=false;busy=false;$('lab-skip-demo').hidden=true;render();}
+ async function choose(sq:Square){if(!session||!unlocked()||busy||promotionPick||session.finished||session.chess.isGameOver()||session.turn!=='w')return;
+  const p=session.chess.get(sq);if(p?.color==='w'){overlay.cancel();preview=null;selected=sq;render();if(session.lesson?.ladder==='discover'&&!demoShown)await showDemo(sq);return;}
+  if(!selected)return;const opts=session.chess.moves({square:selected,verbose:true}).filter(m=>m.to===sq);if(!opts.length){overlay.cancel();preview=null;selected=null;render();return;}
+  if(session.lesson?.ladder==='apply'&&(preview?.from!==selected||preview.to!==sq)){preview={from:selected,to:sq};render();voice.say('Path preview. Tap the same landing square again to move.');board.querySelector<HTMLButtonElement>(`button[aria-label^="${sq}"]`)?.focus();return;}
+  preview=null;overlay.cancel();if(opts.some(m=>m.promotion)){promotionPick={from:selected,to:sq};render();root.querySelector<HTMLButtonElement>('#lab-promotion [data-promotion="q"]')?.focus();return;}await playMove({from:selected,to:sq});}
+ async function playMove(moveInput:InputMove){if(!session)return;clearVisual();promotionPick=null;const move=session.play(moveInput);selected=null;if(!move){render();return;}feedback=move.captured?'✦ A guard is free!':'';voice.sound(session.finished);save();render();if(session.finished){voice.say('Wonderful! The path is open. Choose the next quest.');return;}if(move.captured)voice.say('A guard is free!');if(session.chess.isGameOver())return;if(session.chess.turn()==='b')await reply();}
+ async function reply(){if(!session)return;const active=session,token=++serial;busy=true;render();const scripted=active.lesson?.reply;if(scripted){active.reply(scripted);busy=false;save();render();return;}const move=await new Promise<InputMove|null>(resolve=>{pending={id:token,resolve};worker.postMessage({id:token,save:active.match.save(),tier:active.tier});});if(token!==serial||session!==active)return;const fallback=active.chess.moves({verbose:true})[0];if(move||fallback)active.reply(move??input(fallback));busy=false;save();render();}
+ $('lab-close').onclick=close;
+ $('lab-skip-demo').onclick=()=>{if(!demoActive)return;clearVisual();demoShown=true;selected=null;voice.stop();render();};
+ $('lab-repeat-demo').onclick=()=>{if(busy||!session)return;const sq=session.teachingMove?.from;if(sq)void showDemo(sq);};
+ $('lab-promotion').onclick=e=>{const button=(e.target as HTMLElement).closest<HTMLButtonElement>('button[data-promotion]');if(!button||!promotionPick)return;const choice=button.dataset.promotion;if(choice==='cancel'){promotionPick=null;selected=null;render();return;}const {from,to}=promotionPick;void playMove({from,to,promotion:choice as InputMove['promotion']});};
+ $('lab-hint').onclick=()=>{if(session&&!demoActive){feedback='';visualHelp=Math.min(3,visualHelp+1);const line=session.askHint();voice.say(line);save();render();}};
+ $('lab-listen').onclick=()=>voice.replay();$('lab-sound').onclick=()=>{voice.enabled=!voice.enabled;if(!voice.enabled)voice.stop();if(demoActive){clearVisual();demoShown=true;}render();};
+ $('lab-undo').onclick=()=>{if(session){cancelWork();busy=false;promotionPick=null;session.undo();selected=null;feedback='';save();render();voice.say('Try a new plan.');}};
+ $('lab-restart').onclick=()=>{if(session)start(session.lesson?.id,session.tier);};
+ $('lab-next').onclick=()=>{if(!session?.lesson)return;const i=lessons.findIndex(l=>l.id===session!.lesson!.id);if(i<lessons.length-1)start(lessons[i+1].id);else start(undefined,'gentle');};
+ nav.onclick=e=>{const b=(e.target as HTMLElement).closest<HTMLButtonElement>('button');if(!b||b.disabled)return;if(b.dataset.original){const i=Number(b.dataset.original);close();goOriginal(i);}else if(b.dataset.lesson)start(b.dataset.lesson);else if(b.dataset.tier)start(undefined,b.dataset.tier as OpponentTier);};
+ window.addEventListener('resize',()=>{if(root.hidden)return;clearVisual();demoShown=true;voice.stop();render();});
+ return (id:Profile,completed:boolean[])=>{cancelWork();profile=id;oldDone=[...completed];demoShown=false;visualHelp=0;root.hidden=false;document.getElementById('app')!.inert=true;$('lab-close').focus();const saved=records[id]?.session;session=saved?Session.restore(saved):null;if(session?.lesson){const i=lessons.findIndex(l=>l.id===session!.lesson!.id);if(!canOpenLesson(i,oldDone,progress()))session=null;}else if(session&&!progress().includes(lessons.at(-1)!.id))session=null;if(!session&&unlocked()){const next=nextLesson(progress());start(next?.id,'gentle');}else{selected=null;busy=false;render();nav.querySelector('.active')?.scrollIntoView({block:'nearest'});voice.say(session?.lesson?.story??describe());if(session?.turn==='b'&&!session.finished)void reply();}};
+}

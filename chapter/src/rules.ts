@@ -26,6 +26,7 @@ export const lessons=[
  {title:'One Jump, Two Threats',skill:'A knight fork',icon:'♞ ⚔',goal:'Fork two rooks, then capture one',intro:'Two rooks block the path. Can one knight threaten both at the same time?',guide:'Jump to a square that attacks both rooks. That is a fork! They get one move. Then capture a rook you still attack.',done:'One jump. Two threats! One rook moved away, and you captured the other. That is the power of a fork.',help:1},
  {title:'Across the Bridge',skill:'Choose the right piece',icon:'♟ ♞',goal:'Free the guard and bring the knight to the star',intro:'The bridge is almost open. Your pawn and knight must work together. Look carefully: one friend is in danger!',guide:'Choose which piece should move first. Free the guard, then bring your knight to the star. Ask Toothless if you need help.',done:'Your pawn and knight worked together! The bridge is open. You earned the knight badge!',help:0},
 ] as const;
+export const teachingStages=['discover','apply','discover','independent','discover','mixed','independent','discover','discover','independent','apply','mixed'] as const;
 export function initial(level:number):State {
  const setups:Piece[][]=[
  [piece('a',2,4)],
