@@ -4,3 +4,7 @@
 @media(max-width:700px){.lab-layout nav{display:block;max-height:185px;overflow:auto;border:1px solid #66806c;border-radius:10px;padding:5px}.lab-layout nav button{display:block;width:100%;margin:4px 0}.lab-layout nav h4{position:sticky;top:0;background:#10261e;z-index:1}}
 #lab-promotion{width:min(100%,520px);padding:10px;margin:8px 0;border:2px solid #f7ca62;border-radius:12px;background:#284437}#lab-promotion[hidden]{display:none}#lab-promotion>div{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}#lab-promotion button{border:1px solid #e9c46b;border-radius:9px;background:#f5e4ad;color:#173529;padding:10px;min-height:44px;font-weight:700}#lab-promotion button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 #lab-board{position:relative}.lab-square.preview{outline:4px dashed #ffdf7b;outline-offset:-5px}#lab-skip-demo,#lab-repeat-demo{margin:4px 0 8px;background:#f1d280;color:#173b2c;border:2px solid #fff2bb;font-weight:800}#lab-skip-demo[hidden],#lab-repeat-demo[hidden]{display:none}
+
+.lab-square.selected{outline:4px solid #ffe694;outline-offset:-5px;box-shadow:inset 0 0 0 2px #173b2e}
+.lab-square.selected:after{content:'✓';position:absolute;right:2px;bottom:2px;background:#ffe694;color:#173b2e;border-radius:50%;font:800 14px system-ui;pointer-events:none}
+.lab-square{position:relative}.lab-square.tap-cue:after{content:'☝';position:absolute;top:0;right:2px;font-size:19px;pointer-events:none}
