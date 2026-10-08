@@ -8,3 +8,12 @@
 .lab-square.selected{outline:4px solid #ffe694;outline-offset:-5px;box-shadow:inset 0 0 0 2px #173b2e}
 .lab-square.selected:after{content:'✓';position:absolute;right:2px;bottom:2px;background:#ffe694;color:#173b2e;border-radius:50%;font:800 14px system-ui;pointer-events:none}
 .lab-square{position:relative}.lab-square.tap-cue:after{content:'☝';position:absolute;top:0;right:2px;font-size:19px;pointer-events:none}
+
+/* Reserve feedback space so selecting, Help and enemy turns leave the board in place. */
+#lab-status{line-height:1.5;height:3em;overflow:auto;overscroll-behavior:contain}
+#lab-help{line-height:1.5;height:4.5em;overflow:auto;overscroll-behavior:contain}
+#chess-lab-panel,.lab-layout nav{overscroll-behavior:contain}
+#lab-status:focus-visible,#lab-help:focus-visible{outline:2px solid #ffe396}
+
+#chess-lab-panel{overflow-anchor:none}
+#lab-repeat-demo[hidden]{display:block!important;visibility:hidden;pointer-events:none}
