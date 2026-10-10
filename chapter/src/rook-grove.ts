@@ -2,7 +2,7 @@ import {actor} from './learning/actors';
 export type GroveTier='apprentice'|'guardian'|'master';
 // Generated assets are independent of chess geometry; lab.ts owns the legal hit targets.
 export function groveActor(piece:string,enemy:boolean,tier:GroveTier='apprentice'){
- return `<span class="grove-actor ${enemy?'grove-enemy':'grove-friend'} grove-role-${piece==='r'?'rook':'king'}" aria-hidden="true">${piece==='r'?actor('r',enemy,tier):'<span class="grove-raster grove-king"></span>'}<span class="grove-piece-mark">${piece==='r'?'♜':'♚'}</span></span>`;
+ return `<span class="grove-actor ${enemy?'grove-enemy':'grove-friend'} grove-role-${piece==='r'?'rook':'king'}" aria-hidden="true">${actor(piece==='r'?'r':'k',enemy,tier)}<span class="grove-piece-mark">${piece==='r'?'♜':'♚'}</span></span>`;
 }
 export function groveScenery(){return '<div class="grove-canopy" aria-hidden="true"></div>';}
 // Only a chess.js-validated move reaches this function. Include every visited square,

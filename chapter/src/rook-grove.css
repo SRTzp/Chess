@@ -71,3 +71,5 @@
 .grove-afterimage .grove-piece-mark,.grove-afterimage .grove-actor:before,.grove-afterimage .grove-actor:after{display:none}
 
 .grove-raster{inset:auto;left:var(--sprite-left);top:var(--sprite-top);width:var(--sprite-w);height:var(--sprite-h);background-size:var(--atlas-w) var(--atlas-h)!important;background-position:var(--atlas-x) var(--atlas-y)!important;transform:none!important}
+
+.grove-actor:has(.journey-atlas){inset:0;width:100%;height:100%}

@@ -46,17 +46,43 @@ export class Match {
   m.rounds=[...s.rounds];return m;}catch{return null;}
  }
 }
-// Deterministic, bounded opponent. Tiers are search settings, not Elo ratings.
-export const opponentTiers={gentle:{depth:1,nodes:700},steady:{depth:2,nodes:5000},challenge:{depth:3,nodes:18000}}as const;
+// Bounded iterative search. Cosmetic/tutorial replies are deliberately separate.
+export const opponentTiers={gentle:{depth:2,nodes:2200,ms:220},steady:{depth:3,nodes:7000,ms:500},challenge:{depth:4,nodes:18000,ms:1000}}as const;
 export type OpponentTier=keyof typeof opponentTiers;
-function evaluate(c:Chess){if(c.isCheckmate())return -100000;if(c.isDraw())return 0;let n=0;for(const row of c.board())for(const p of row)if(p){const center=3.5-Math.abs(p.square.charCodeAt(0)-100.5);n+=(p.color===c.turn()?1:-1)*(values[p.type]+(p.type==='p'||p.type==='n'?center*8:0));}return n;}
-export function bestMove(c:Chess,tier:OpponentTier='steady',stats?:{nodes:number}):InputMove|null{
- if(c.isGameOver())return null;const cfg=opponentTiers[tier];let nodes=0;
- const moves=()=>c.moves({verbose:true}).sort((a,b)=>(values[b.captured??'p']*(b.captured?1:0)+values[b.promotion??'p']*(b.promotion?1:0))-(values[a.captured??'p']*(a.captured?1:0)+values[a.promotion??'p']*(a.promotion?1:0))||a.lan.localeCompare(b.lan));
- function search(depth:number,alpha:number,beta:number):number{
-  nodes++;if(depth===0||nodes>=cfg.nodes||c.isGameOver())return evaluate(c);
-  let value=-Infinity;for(const m of moves()){c.move(input(m));const score=-search(depth-1,-beta,-alpha);c.undo();value=Math.max(value,score);alpha=Math.max(alpha,value);if(alpha>=beta||nodes>=cfg.nodes)break;}return value;
+export type SearchStats={nodes:number;depth?:number;elapsedMs?:number;limited?:boolean};
+function evaluate(c:Chess){
+ if(c.isCheckmate())return -100000;if(c.isDraw())return 0;
+ const pieces=c.board().flat().filter(p=>!!p),endgame=!pieces.some(p=>p.type==='q')&&pieces.filter(p=>p.type!=='p'&&p.type!=='k').length<=4;
+ let score=0;
+ for(const p of pieces){const file=p.square.charCodeAt(0)-97,rank=Number(p.square[1])-1,advance=p.color==='w'?rank:7-rank,center=7-Math.abs(file-3.5)-Math.abs(rank-3.5);let positional=0;
+  if(p.type==='p')positional=center*5+advance*9+(advance>=5?advance*14:0);
+  if(p.type==='n'||p.type==='b')positional=center*(p.type==='n'?12:7)+(advance===0?-24:0);
+  if(p.type==='r')positional=advance===6?20:0;
+  if(p.type==='q')positional=center*3+(!endgame&&advance>2&&pieces.some(x=>x.color===p.color&&['n','b'].includes(x.type)&&(p.color==='w'?Number(x.square[1])===1:Number(x.square[1])===8))?-35:0);
+  if(p.type==='k')positional=endgame?center*12:(advance===0&&(file===6||file===2)?42:0)-center*10-advance*15;
+  score+=(p.color===c.turn()?1:-1)*(values[p.type]+positional);
  }
- let best:Move|undefined,score=-Infinity;for(const m of moves()){if(nodes>=cfg.nodes&&best)break;c.move(input(m));const s=-search(cfg.depth-1,-Infinity,Infinity);c.undo();if(s>score){score=s;best=m;}}
- if(stats)stats.nodes=nodes;return best?input(best):null;
+ return score;
+}
+export function bestMove(c:Chess,tier:OpponentTier='steady',stats?:SearchStats):InputMove|null{
+ const begin=performance.now(),cfg=opponentTiers[tier];let nodes=0,completed=0,limited=false;const stop={};
+ const ordered=()=>c.moves({verbose:true}).sort((a,b)=>{const priority=(m:Move)=>(m.promotion?values[m.promotion]:0)+(m.captured?values[m.captured]*10-values[m.piece]:0)+(m.san.includes('+')?50:0);return priority(b)-priority(a)||a.lan.localeCompare(b.lan);});
+ const budget=()=>{if(nodes>=cfg.nodes||performance.now()-begin>=cfg.ms){limited=true;throw stop;}nodes++;};
+ function quiet(alpha:number,beta:number,left:number):number{
+  budget();if(c.isCheckmate())return-100000;if(c.isDraw())return 0;
+  const checked=c.isCheck(),stand=evaluate(c);if(left===0)return stand;
+  if(!checked){if(stand>=beta)return stand;alpha=Math.max(alpha,stand);}
+  const moves=ordered().filter(m=>checked||m.captured||m.promotion||left>=3&&m.san.includes('+'));
+  for(const m of moves){c.move(input(m));let score;try{score=-quiet(-beta,-alpha,left-1);}finally{c.undo();}if(score>=beta)return score;alpha=Math.max(alpha,score);}return alpha;
+ }
+ function search(depth:number,alpha:number,beta:number):number{
+  if(depth===0)return quiet(alpha,beta,4);budget();if(c.isCheckmate())return-100000-depth;if(c.isDraw())return 0;
+  for(const m of ordered()){c.move(input(m));let score;try{score=-search(depth-1,-beta,-alpha);}finally{c.undo();}if(score>=beta)return score;alpha=Math.max(alpha,score);}return alpha;
+ }
+ const roots=ordered();if(!roots.length||c.isGameOver()){if(stats)Object.assign(stats,{nodes:0,depth:0,elapsedMs:performance.now()-begin,limited:false});return null;}
+ let chosen=roots[0],fallback=-Infinity;const side=c.turn();for(const m of roots){if(m.san.endsWith('#')){if(stats)Object.assign(stats,{nodes,depth:1,elapsedMs:performance.now()-begin,limited:false});return input(m);}c.move(input(m));let risk=0;for(const piece of c.board().flat()){if(!piece||piece.color!==side||piece.type==='k')continue;const attackers=c.attackers(piece.square,opposite(side));if(!attackers.length)continue;const least=Math.min(...attackers.map(s=>values[c.get(s)!.type]));const defended=c.attackers(piece.square,side).length>0;risk+=defended?Math.max(0,values[piece.type]-least)*.8:values[piece.type]*.9;}const candidate=-evaluate(c)-risk;c.undo();if(candidate>fallback){fallback=candidate;chosen=m;}}
+ for(let depth=1;depth<=cfg.depth;depth++){
+  let best=chosen,score=-Infinity;try{for(const m of [...roots].sort((a,b)=>a.lan===chosen.lan?-1:b.lan===chosen.lan?1:0)){c.move(input(m));let candidate;try{candidate=-search(depth-1,-Infinity,-score);}finally{c.undo();}if(candidate>score){score=candidate;best=m;if(depth===1&&score>=fallback)chosen=best;}}chosen=best;completed=depth;if(score>=100000)break;}catch(e){if(e!==stop)throw e;break;}
+ }
+ if(stats)Object.assign(stats,{nodes,depth:completed,elapsedMs:performance.now()-begin,limited});return input(chosen);
 }

@@ -1,5 +1,10 @@
+import {extraTrials} from './plans-bank';
+import {isPassedPawn} from './pawn-outcomes';
+import {Session} from '../engine/session';
+import type {Goal} from '../engine/lessons';
+import {teachingReply} from '../engine/teaching-reply';
 import {Chess,forkTargets,pins,discoveries,type Square,type InputMove} from '../engine/chess';import type {Role,Skill} from './ledger';
-export type Trial={id:string;skill:Skill;fen:string;instruction:string;accepted:InputMove[];concept:string;objective?:'fork'|'pin'|'discovery'};
+export type Trial={id:string;skill:Skill;fen:string;instruction:string;accepted:InputMove[];concept:string;objective?:'fork'|'pin'|'discovery';goal?:Goal;outcome?:'stalemate'|'passed-pawn';reply?:InputMove};
 const names={p:'Pawn',n:'Knight',b:'Bishop',r:'Rook',q:'Queen',k:'King'};
 // Finite authored placements, never random/generated-at-runtime puzzle guesses.
 const layouts:Record<Role,[Square,Square,Square?][]>={
@@ -38,5 +43,18 @@ authored('team-space-2','team',[['d2','wp'],['b1','wn'],['g1','wn'],['e7','bp']]
 authored('team-space-3','team',[['e2','wp'],['c1','wb'],['f1','wb'],['d7','bp']],{from:'e2',to:'e4'},'Open a central road for your friends.');
 for(const [i,king,to] of [[1,'d3','e3'],[2,'e3','f3'],[3,'f3','g3']] as const){const c=new Chess();c.clear();c.put({type:'k',color:'b'},'h8');c.put({type:'k',color:'w'},king);c.put({type:'r',color:'b'},'a4');c.put({type:'p',color:'w'},'h2');trials.push({id:'prevent-'+i,skill:'prevent',fen:c.fen(),accepted:[{from:king,to}],instruction:'Stay off the rook road.',concept:'Look where they could attack before moving.'});}
 for(const [i,pawn,king,to] of [[1,'d4','c3','c4'],[2,'c4','b3','b4'],[3,'f4','e3','e4']] as const){const c=new Chess();c.clear();c.put({type:'k',color:'b'},'h8');c.put({type:'k',color:'w'},king);c.put({type:'p',color:'w'},pawn);trials.push({id:'passer-'+i,skill:'passer',fen:c.fen(),accepted:[{from:king,to}],instruction:'Bring the king beside the pawn safely.',concept:'A safe active king can escort a passed pawn.'});}
-export function trialMet(t:Trial,move:InputMove,c:Chess){const before=new Chess(t.fen);let played;try{played=before.move(move);}catch{return false;}const original=new Chess(t.fen);const tactical=t.objective==='fork'?forkTargets(c,move.to).length>=2:t.objective==='pin'?pins(c,'w').length>0:t.objective==='discovery'?discoveries(original,c,played).length>0:true;return tactical&& t.accepted.some(m=>m.from===move.from&&m.to===move.to&&(!m.promotion||m.promotion===move.promotion))&&c.attackers(move.to,'b').length===0;}
+trials.push(...extraTrials);
+export function trialMet(t:Trial,move:InputMove,c:Chess){
+ const played=c.history({verbose:true}).at(-1);if(!played||played.color!=='w'||played.from!==move.from||played.to!==move.to||played.after!==c.fen())return false;
+ const before=new Chess(played.before);
+ if(t.goal)return new Session().goalMet(before,c,played,t.goal);
+ if(t.outcome==='stalemate')return c.isStalemate();
+ if(t.outcome==='passed-pawn')return played.piece==='p'&&!isPassedPawn(before,move.from)&&isPassedPawn(c,move.to);
+ const tactical=t.objective==='fork'?forkTargets(c,move.to).length>=2:t.objective==='pin'?pins(c,'w').some(p=>p.attacker===move.to)&&!pins(before,'w').length:t.objective==='discovery'?discoveries(before,c,played).length>0:true;
+ return tactical&&(t.objective?true:t.accepted.some(m=>m.from===move.from&&m.to===move.to&&(!m.promotion||m.promotion===move.promotion)))&&c.attackers(move.to,'b').length===0;
+}
 export const miniStart='7k/7p/8/8/4P3/3K4/8/8 w - - 0 1';
+
+export function trialReply(t:Trial,c:Chess){if(c.isGameOver()||c.turn()!=='b')return null;return t.reply&&c.moves({verbose:true}).some(m=>m.from===t.reply!.from&&m.to===t.reply!.to)?t.reply:teachingReply(c);}
+
+export function trialHintMove(t:Trial,c:Chess):InputMove|null{for(const move of c.moves({verbose:true})){const after=new Chess(c.fen()),m={from:move.from,to:move.to,...(move.promotion?{promotion:move.promotion as InputMove['promotion']}:{})};after.move(m);if(trialMet(t,m,after))return m;}return null;}

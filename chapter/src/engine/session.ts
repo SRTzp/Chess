@@ -1,3 +1,4 @@
+import {teachingReply} from './teaching-reply';
 import {Chess,Match,DEFAULT_POSITION,bestMove,discoveries,forkTargets,pins,status,input,type ChessSave,type InputMove,type OpponentTier,type Move} from './chess';
 import {lessons,type Goal,type Lesson} from './lessons';
 export type SessionSave={version:1;mode:'lesson'|'game';lessonId?:string;tier:OpponentTier;match:ChessSave;hintLevel:number;finished:boolean};
@@ -22,7 +23,7 @@ export class Session{
  }
  askHint(){this.hintLevel=Math.min(3,this.hintLevel+1);return this.hint;}
  play(m:InputMove):Move|null{if(this.finished||this.turn!=='w')return null;this.match.beginRound();const ply=this.chess.history().length;const before=new Chess(this.chess.fen());const move=this.match.move(m);if(!move){this.match.undoRound();return null;}if(this.lesson){if(this.lesson.setupGoal&&ply===0)this.setupSatisfied=this.goalMet(before,this.chess,move,this.lesson.setupGoal);else if((!this.lesson.setupGoal||ply===2&&this.setupSatisfied)&&this.goalMet(before,this.chess,move,this.lesson.goal))this.finished=true;}return move;}
- private goalMet(before:Chess,after:Chess,move:Move,g:Goal):boolean{
+ goalMet(before:Chess,after:Chess,move:Move,g:Goal):boolean{
   switch(g.kind){
    case 'move':if(g.accepted)return g.accepted.some(m=>same(input(move),m));return (g.square?move.to===g.square:!!g.move&&same(input(move),g.move))&&(!g.piece||move.piece===g.piece);
    case 'capture':return !!move.captured&&(!g.square||move.to===g.square)&&(!g.piece||move.piece===g.piece);
@@ -40,7 +41,7 @@ export class Session{
    case 'mate':return after.isCheckmate();
   }
  }
- reply(m?:InputMove):Move|null{if(this.finished||this.turn!=='b'||this.chess.isGameOver())return null;const scripted=m??this.lesson?.reply;if(scripted){const move=this.match.move(scripted);if(move)return move;}const chosen=bestMove(this.chess,this.tier);return chosen?this.match.move(chosen):null;}
+ reply(m?:InputMove):Move|null{if(this.finished||this.turn!=='b'||this.chess.isGameOver())return null;const scripted=m??this.lesson?.reply;if(scripted){const move=this.match.move(scripted);if(move)return move;}const chosen=this.lesson?teachingReply(this.chess):bestMove(this.chess,this.tier);return chosen?this.match.move(chosen):null;}
  undo(){const ok=this.match.undoRound();if(ok){this.finished=false;if(this.chess.history().length===0)this.setupSatisfied=false;}return ok;}
  save():SessionSave{return{version:1,mode:this.mode,lessonId:this.lesson?.id,tier:this.tier,match:this.match.save(),hintLevel:this.hintLevel,finished:this.finished};}
  static restore(value:unknown):Session|null{try{const s=value as SessionSave;if(s?.version!==1||!['lesson','game'].includes(s.mode)||!['gentle','steady','challenge'].includes(s.tier)||!Number.isInteger(s.hintLevel)||s.hintLevel<0||s.hintLevel>3||typeof s.finished!=='boolean')return null;const lesson=s.mode==='lesson'?lessons.find(x=>x.id===s.lessonId):undefined;if(s.mode==='lesson'&&!lesson)return null;const match=Match.restore(s.match);if(!match||match.start!==(lesson?.fen??DEFAULT_POSITION))return null;const session=new Session(lesson,s.tier);for(const move of s.match.moves){const played=session.turn==='w'?session.play(move):session.reply(move);if(!played||!same(input(played),move))return null;}if(session.chess.fen()!==match.chess.fen()||session.finished!==s.finished)return null;session.hintLevel=s.hintLevel;return session;}catch{return null;}}

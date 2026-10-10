@@ -1,0 +1,4 @@
+.journey-atlas{width:94%;height:94%;left:3%;bottom:3%;background-size:400% var(--atlas-height,400%);background-position:0 var(--tier-y);image-rendering:pixelated;animation:journey-idle 6s step-end infinite}
+.journey-reduced .journey-atlas,.full-reduced .journey-atlas,.grove-reduced .journey-atlas{animation:none!important;background-position:0 var(--tier-y)}
+@keyframes journey-idle{0%,82%,94%,100%{background-position:0 var(--tier-y)}83%,93%{background-position:33.333333% var(--tier-y)}}
+@media(prefers-reduced-motion:reduce){.journey-atlas{animation:none!important}}
