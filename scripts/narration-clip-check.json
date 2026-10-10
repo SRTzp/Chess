@@ -1,0 +1,137 @@
+[
+  {
+    "id": "level-1-guide",
+    "transcript": "This little hero is your pawn. Watch it move one square forward. Now you try. Tap your pawn, then the square ahead.",
+    "score": 1.0
+  },
+  {
+    "id": "level-1-done",
+    "transcript": "You found toothless. Thank you. Will you come with me?",
+    "score": 1.0
+  },
+  {
+    "id": "level-2-intro",
+    "transcript": "Toothless spots a friend on the path. Can your pawn move forward with someone in the way?",
+    "score": 1.0
+  },
+  {
+    "id": "level-2-guide",
+    "transcript": "Upon, cannot jump over another piece. Tap your friend. Let us ask him to clear the path.",
+    "score": 0.9142857142857143
+  },
+  {
+    "id": "level-2-done",
+    "transcript": "The path was clear, so your pond could follow. Come on. Our friend has spotted something in the mist.",
+    "score": 0.9473684210526315
+  },
+  {
+    "id": "level-3-intro",
+    "transcript": "Oh, the mist has put a spell on a guard. Capture his peace to break the spell and set him free.",
+    "score": 0.9523809523809523
+  },
+  {
+    "id": "level-3-guide",
+    "transcript": "Pawns move straight ahead but capture diagonally. That means one square forward and one to the side. Watch, then try.",
+    "score": 1.0
+  },
+  {
+    "id": "level-3-done",
+    "transcript": "The guard is free. Move straight. Capture diagonally. Two different moves.",
+    "score": 1.0
+  },
+  {
+    "id": "level-4-intro",
+    "transcript": "Another guard is coming through the garden. Toothless stays close. This time, you choose the way.",
+    "score": 1.0
+  },
+  {
+    "id": "level-4-guide",
+    "transcript": "Look before you move. Can you capture yet or do you need to move closer? Watch what changes after the guard moves.",
+    "score": 1.0
+  },
+  {
+    "id": "level-4-done",
+    "transcript": "You moved closer, then spotted your capture. Beyond the garden, a Golden Star lights the path.",
+    "score": 1.0
+  },
+  {
+    "id": "level-5-intro",
+    "transcript": "The star is just ahead. Your pawn is on its starting square. It is not moved yet.",
+    "score": 0.9411764705882353
+  },
+  {
+    "id": "level-5-guide",
+    "transcript": "On its first move, a pawn may go one or two squares forward. For two steps, both squares must be empty. Watch, then choose.",
+    "score": 1.0
+  },
+  {
+    "id": "level-5-done",
+    "transcript": "You reach the star. After a pawn has moved, it cannot take that 2 square first step again.",
+    "score": 0.9142857142857143
+  },
+  {
+    "id": "level-6-intro",
+    "transcript": "The village gate is near, but two guards are still under the spell. You have two pawns to help them. Toothless is counting on you.",
+    "score": 1.0
+  },
+  {
+    "id": "level-6-guide",
+    "transcript": "Choose one pawn to move each turn, then watch the guards. Look for captures and keep your pawns safe. I am here if you need help.",
+    "score": 1.0
+  },
+  {
+    "id": "level-6-done",
+    "transcript": "Both guards are free. The gate swings open. You and Toothless did it together. Here's your Dragon Badge.",
+    "score": 1.0
+  },
+  {
+    "id": "choose-pawn",
+    "transcript": "Tap your pawn first.",
+    "score": 1.0
+  },
+  {
+    "id": "choose-square",
+    "transcript": "Now tap a square to move to.",
+    "score": 1.0
+  },
+  {
+    "id": "your-turn",
+    "transcript": "Your turn. Look before you move.",
+    "score": 1.0
+  },
+  {
+    "id": "enemy-turn",
+    "transcript": "The guards are moving, watch closely.",
+    "score": 1.0
+  },
+  {
+    "id": "invalid-move",
+    "transcript": "Not that square. Try another, or tap me for help.",
+    "score": 1.0
+  },
+  {
+    "id": "hint-moves",
+    "transcript": "The gold borders show where you can move.",
+    "score": 1.0
+  },
+  {
+    "id": "hint-danger",
+    "transcript": "Warning marks show where a guard could capture your pawn.",
+    "score": 1.0
+  },
+  {
+    "id": "hint-next",
+    "transcript": "Look at this pawn in the little star.",
+    "score": 0.875
+  },
+  {
+    "id": "undo",
+    "transcript": "Back to your last turn, try a new plan.",
+    "score": 1.0
+  },
+  {
+    "id": "try-again",
+    "transcript": "That is okay. Tap undo. We can try together.",
+    "score": 1.0
+  }
+]

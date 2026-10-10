@@ -1,0 +1,218 @@
+[
+  {
+    "id": "level-1-guide",
+    "source": "chessia-01-levels-1-3.mp3",
+    "start": 0.0,
+    "end": 7.605,
+    "text": "This little hero is your pawn. Watch it move one square forward. Now you try! Tap your pawn, then the square ahead.",
+    "alignmentScore": 1.0
+  },
+  {
+    "id": "level-1-done",
+    "source": "chessia-01-levels-1-3.mp3",
+    "start": 7.605,
+    "end": 12.015,
+    "text": "You found Toothless! Thank you! Will you come with me?",
+    "alignmentScore": 1.0
+  },
+  {
+    "id": "level-2-intro",
+    "source": "chessia-01-levels-1-3.mp3",
+    "start": 12.015,
+    "end": 17.72,
+    "text": "Toothless spots a friend on the path. Can your pawn move forward with someone in the way?",
+    "alignmentScore": 1.0
+  },
+  {
+    "id": "level-2-guide",
+    "source": "chessia-01-levels-1-3.mp3",
+    "start": 17.72,
+    "end": 23.965,
+    "text": "A pawn cannot jump over another piece. Tap your friend. Let us ask him to clear the path.",
+    "alignmentScore": 1.0
+  },
+  {
+    "id": "level-2-done",
+    "source": "chessia-01-levels-1-3.mp3",
+    "start": 23.965,
+    "end": 31.1,
+    "text": "The path was clear, so your pawn could follow. Come on! Our friend has spotted something in the mist.",
+    "alignmentScore": 1.0
+  },
+  {
+    "id": "level-3-intro",
+    "source": "chessia-01-levels-1-3.mp3",
+    "start": 31.1,
+    "end": 36.355,
+    "text": "Oh! The mist has put a spell on a guard. Capture his piece to break the spell and set him free!",
+    "alignmentScore": 1.0
+  },
+  {
+    "id": "level-3-guide",
+    "source": "chessia-01-levels-1-3.mp3",
+    "start": 36.355,
+    "end": 43.74,
+    "text": "Pawns move straight ahead, but capture diagonally. That means one square forward and one to the side. Watch, then try!",
+    "alignmentScore": 1.0
+  },
+  {
+    "id": "level-3-done",
+    "source": "chessia-01-levels-1-3.mp3",
+    "start": 43.74,
+    "end": 48.849,
+    "text": "The guard is free! Move straight. Capture diagonally. Two different moves!",
+    "alignmentScore": 1.0
+  },
+  {
+    "id": "level-4-intro",
+    "source": "chessia-02-levels-4-6.mp3",
+    "start": 0.0,
+    "end": 5.52,
+    "text": "Another guard is coming through the garden. Toothless stays close. This time, you choose the way.",
+    "alignmentScore": 0.9945
+  },
+  {
+    "id": "level-4-guide",
+    "source": "chessia-02-levels-4-6.mp3",
+    "start": 5.52,
+    "end": 12.525,
+    "text": "Look before you move. Can you capture yet, or do you need to move closer? Watch what changes after the guard moves.",
+    "alignmentScore": 0.9945
+  },
+  {
+    "id": "level-4-done",
+    "source": "chessia-02-levels-4-6.mp3",
+    "start": 12.525,
+    "end": 19.37,
+    "text": "You moved closer, then spotted your capture! Beyond the garden, a golden star lights the path.",
+    "alignmentScore": 0.9945
+  },
+  {
+    "id": "level-5-intro",
+    "source": "chessia-02-levels-4-6.mp3",
+    "start": 19.37,
+    "end": 24.995,
+    "text": "The star is just ahead! Your pawn is on its starting square. It has not moved yet.",
+    "alignmentScore": 0.9945
+  },
+  {
+    "id": "level-5-guide",
+    "source": "chessia-02-levels-4-6.mp3",
+    "start": 24.995,
+    "end": 34.545,
+    "text": "On its first move, a pawn may go one or two squares forward. For two steps, both squares must be empty. Watch, then choose!",
+    "alignmentScore": 0.9945
+  },
+  {
+    "id": "level-5-done",
+    "source": "chessia-02-levels-4-6.mp3",
+    "start": 34.545,
+    "end": 40.895,
+    "text": "You reached the star! After a pawn has moved, it cannot take that two-square first step again.",
+    "alignmentScore": 0.9945
+  },
+  {
+    "id": "level-6-intro",
+    "source": "chessia-02-levels-4-6.mp3",
+    "start": 40.895,
+    "end": 49.245,
+    "text": "The village gate is near! But two guards are still under the spell. You have two pawns to help them. Toothless is counting on you!",
+    "alignmentScore": 0.9945
+  },
+  {
+    "id": "level-6-guide",
+    "source": "chessia-02-levels-4-6.mp3",
+    "start": 49.245,
+    "end": 58.625,
+    "text": "Choose one pawn to move each turn. Then watch the guards. Look for captures, and keep your pawns safe. I am here if you need help.",
+    "alignmentScore": 0.9945
+  },
+  {
+    "id": "level-6-done",
+    "source": "chessia-02-levels-4-6.mp3",
+    "start": 58.625,
+    "end": 66.952,
+    "text": "Both guards are free. The gate swings open! You and Toothless did it together. Here is your dragon badge!",
+    "alignmentScore": 0.9945
+  },
+  {
+    "id": "choose-pawn",
+    "source": "chessia-03-shared-lines.mp3",
+    "start": 0.0,
+    "end": 1.435,
+    "text": "Tap your pawn first.",
+    "alignmentScore": 0.987
+  },
+  {
+    "id": "choose-square",
+    "source": "chessia-03-shared-lines.mp3",
+    "start": 1.435,
+    "end": 3.55,
+    "text": "Now tap a square to move to.",
+    "alignmentScore": 0.987
+  },
+  {
+    "id": "your-turn",
+    "source": "chessia-03-shared-lines.mp3",
+    "start": 3.55,
+    "end": 5.88,
+    "text": "Your turn. Look before you move.",
+    "alignmentScore": 0.987
+  },
+  {
+    "id": "enemy-turn",
+    "source": "chessia-03-shared-lines.mp3",
+    "start": 5.88,
+    "end": 8.325,
+    "text": "The guards are moving. Watch closely.",
+    "alignmentScore": 0.987
+  },
+  {
+    "id": "invalid-move",
+    "source": "chessia-03-shared-lines.mp3",
+    "start": 8.325,
+    "end": 12.38,
+    "text": "Not that square. Try another, or tap me for help.",
+    "alignmentScore": 0.987
+  },
+  {
+    "id": "hint-moves",
+    "source": "chessia-03-shared-lines.mp3",
+    "start": 12.38,
+    "end": 15.42,
+    "text": "The gold borders show where you can move.",
+    "alignmentScore": 0.987
+  },
+  {
+    "id": "hint-danger",
+    "source": "chessia-03-shared-lines.mp3",
+    "start": 15.42,
+    "end": 19.175,
+    "text": "Warning marks show where a guard could capture your pawn.",
+    "alignmentScore": 0.987
+  },
+  {
+    "id": "hint-next",
+    "source": "chessia-03-shared-lines.mp3",
+    "start": 19.175,
+    "end": 21.185,
+    "text": "Look at this pawn and the little star.",
+    "alignmentScore": 0.987
+  },
+  {
+    "id": "undo",
+    "source": "chessia-03-shared-lines.mp3",
+    "start": 21.185,
+    "end": 23.825,
+    "text": "Back to your last turn. Try a new plan!",
+    "alignmentScore": 0.987
+  },
+  {
+    "id": "try-again",
+    "source": "chessia-03-shared-lines.mp3",
+    "start": 23.825,
+    "end": 27.429,
+    "text": "That is okay. Tap Undo. We can try together.",
+    "alignmentScore": 0.987
+  }
+]
