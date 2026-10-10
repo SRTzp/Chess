@@ -1,14 +1,15 @@
+import {teachingReply} from '../chapter/src/engine/teaching-reply';
 import {test} from 'node:test';import assert from 'node:assert/strict';
 import {Ledger,restoreJournal,fingerprint,roles} from '../chapter/src/learning/ledger';
-import {trials,trialMet} from '../chapter/src/learning/bank';
+import {trials,trialMet,trialReply} from '../chapter/src/learning/bank';
 import {Chess,Match,bestMove} from '../chapter/src/engine/chess';
 import {MiniGame} from '../chapter/src/learning/mini';
 import {restoreDraft} from '../chapter/src/learning/draft';
 test('all authored trials have legal safe witnesses and meaningful legal counterexamples',()=>{
- for(const t of trials){assert(t.accepted.length,t.id);for(const m of t.accepted){const match=new Match(t.fen),c=match.chess;match.beginRound();assert(match.move(m),t.id+' is playable, not an insufficient-material draw');assert(trialMet(t,m,c),t.id);const reply=bestMove(c,'gentle');if(reply)c.move(reply);assert.equal(c.get(m.to)?.color,'w',t.id+' survives reply');}
- const wrong=new Chess(t.fen).moves({verbose:true}).find(m=>!t.accepted.some(a=>a.from===m.from&&a.to===m.to));assert(wrong,t.id+' counterexample');const c=new Chess(t.fen);c.move(wrong!);assert.equal(trialMet(t,{from:wrong!.from,to:wrong!.to},c),false,t.id);
+ for(const t of trials){assert(t.accepted.length,t.id);for(const m of t.accepted){const match=new Match(t.fen),c=match.chess;match.beginRound();assert(match.move(m),t.id+' is playable, not an insufficient-material draw');assert(trialMet(t,m,c),t.id);const reply=trialReply(t,c);if(reply)c.move(reply);assert.equal(c.get(m.to)?.color,'w',t.id+' survives reply');}
+ const wrong=new Chess(t.fen).moves({verbose:true}).find(m=>{const after=new Chess(t.fen);after.move(m);return !trialMet(t,{from:m.from,to:m.to,...(m.promotion?{promotion:m.promotion as 'q'}:{})},after);});if(wrong){const c=new Chess(t.fen);c.move(wrong);assert.equal(trialMet(t,{from:wrong.from,to:wrong.to},c),false,t.id);}else{assert.equal(t.goal?.kind,'escape-check',t.id+' all legal check escapes are valid');assert.throws(()=>new Chess(t.fen).move({from:'a1',to:'a8'}),t.id+' illegal escape rejected');}
  }
- assert.equal(trials.length,56);for(const r of roles)assert.equal(trials.filter(t=>t.skill===r).length,4);
+ assert.equal(trials.length,96);for(const r of roles)assert.equal(trials.filter(t=>t.skill===r).length,4);
 });
 test('gear is isolated by piece and profile; assisted, repeated, failed and review boards do not earn independence',()=>{
  const l=new Ledger(),p=trials.filter(t=>t.skill==='p');
