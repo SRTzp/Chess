@@ -20,7 +20,7 @@ export function createLearningRoom(voice:Voice,toFull?:(id:string)=>void){
  document.body.append(root);
  const $=(s:string)=>root.querySelector<HTMLElement>(s)!;
  const board=$('.learning-board'),line=$('.learning-line'),menu=$('aside');const overlay=new TeachingOverlay(board,p=>board.querySelector<HTMLButtonElement>('[data-square="'+String.fromCharCode(97+p.x)+(8-p.y)+'"]'));
- const animator=new BoardMotion(board);
+ const animator=new BoardMotion(board,()=>{if(!root.hidden)render();});
  function showTrialDemo(){if(mini)return;const m=trialHintMove(trial,current());if(!m)return;mark('path demonstration');selected=m.from;save();render();const p=current().get(m.from);if(p)void overlay.show({from:algebraicPoint(m.from),to:algebraicPoint(m.to),piece:p.type,capture:!!current().get(m.to)},'demo',motion.checked);}
  let profile='akin',role:Skill='p',phase:Phase='discover',trial:Trial=trials[0],match=new Match(trial.fen),mini:MiniGame|null=null;
  let selected:Square|null=null,promotion:InputMove|null=null,support=false,shown:string[]=[],novel=false,busy=false,token=0,done=false,index=0,good=false,last:Square|null=null,close:()=>void=()=>{};
@@ -51,15 +51,15 @@ export function createLearningRoom(voice:Voice,toFull?:(id:string)=>void){
   board.replaceChildren();const targets=selected&&support?c.moves({square:selected,verbose:true}):[];
   for(let rank=8;rank>=1;rank--)for(const file of 'abcdefgh'){
    const sq=(file+rank)as Square,p=c.get(sq),b=document.createElement('button');b.dataset.square=sq;b.className='learning-cell '+((file.charCodeAt(0)+rank)%2?'light':'dark');
-   b.setAttribute('aria-label',sq+(p?' '+(p.color==='w'?'White':'Black')+' '+names[p.type]:''));b.setAttribute('aria-pressed',String(selected===sq));b.disabled=busy||done||!!promotion||c.turn()!=='w';
-   if(p){const symbol=p.color==='b'?enemyGlyphs[p.type]:glyphs[p.type],symbols=root.querySelector<HTMLInputElement>('[data-symbols]')!.checked;b.classList.toggle('chess-symbols',symbols);b.classList.add(p.color==='w'?'friend':'enemy');b.innerHTML=symbols?symbol:actor(p.type,p.color==='b',ledger.evidence(profile,p.type).owned)+`<span class="chess-bridge">${symbol}</span>`;}
+   b.setAttribute('aria-label',sq+(p?' '+(p.color==='w'?'White':'Black')+' '+names[p.type]:''));b.setAttribute('aria-pressed',String(selected===sq));b.disabled=busy||animator.active||done||!!promotion||c.turn()!=='w';
+   if(p){const symbol=p.color==='b'?enemyGlyphs[p.type]:glyphs[p.type],symbols=root.querySelector<HTMLInputElement>('[data-symbols]')!.checked;b.classList.toggle('chess-symbols',symbols);b.classList.add(p.color==='w'?'friend':'enemy');b.innerHTML=symbols?`<span class="full-symbol" data-role="${p.type}" data-side="${p.color==='b'?'enemy':'friend'}">${symbol}</span>`:actor(p.type,p.color==='b',ledger.evidence(profile,p.type).owned)+`<span class="chess-bridge">${symbol}</span>`;}
    if(p?.type==='k'&&p.color===c.turn()&&c.isCheck())b.classList.add('checked');if(selected===sq)b.classList.add('selected');if(targets.some(m=>m.to===sq))b.classList.add('landing');
    if(roles.includes(role as Role)&&phase!=='mini'&&phase!=='game'&&!p&&trial.accepted.some(m=>m.to===sq))b.innerHTML+='<span class="learning-star">✦</span>';
    b.innerHTML+=`<span class="learning-coordinate">${sq}</span>`;b.onclick=()=>void tap(sq);board.append(b);
   }
   ($('[data-undo]')as HTMLButtonElement).disabled=!c.history().length;
-  ($('[data-next]')as HTMLButtonElement).disabled=busy||!!promotion;
-  ($('[data-hint]')as HTMLButtonElement).disabled=busy||done||!!promotion;
+  ($('[data-next]')as HTMLButtonElement).disabled=busy||animator.active||!!promotion;
+  ($('[data-hint]')as HTMLButtonElement).disabled=busy||animator.active||done||!!promotion;
   $('.learning-promotion').hidden=!promotion;$('[data-demo]').hidden=!!mini||phase!=='discover'&&phase!=='practice';$('[data-next]').textContent=phase==='review'?'Next friend →':'Next →';if(mini){root.querySelector<HTMLSelectElement>('[data-mini-kind]')!.value=mini.kind;root.querySelector<HTMLSelectElement>('[data-mini-variant]')!.value=String(mini.variant);}
   animator.refresh();
   $('[data-review]').hidden=!Object.values(ledger.profile(profile).skills).some(e=>e&&e.reviewAt>0&&e.reviewAt<=Date.now());
@@ -80,7 +80,7 @@ export function createLearningRoom(voice:Voice,toFull?:(id:string)=>void){
  }
  function settle(){const pending=busy||current().turn()==='b';cancel();if(pending)finishTurn();else{save();render();}}
  async function tap(sq:Square){
-  if(busy||done||promotion||current().turn()!=='w')return;const c=current(),p=c.get(sq);
+  if(busy||animator.active||done||promotion||current().turn()!=='w')return;const c=current(),p=c.get(sq);
   if(p?.color==='w'){selected=sq;render();say(support?trial.concept:'Choose a safe landing.');return;}
   if(!selected){say('Tap your friend first.');return;}
   const options=c.moves({square:selected,verbose:true}).filter(m=>m.to===sq);

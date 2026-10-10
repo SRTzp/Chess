@@ -32,7 +32,7 @@ export function createLab(goOriginal:(level:number)=>void,voice:Voice,onClose:()
  const groveGuidance=document.createElement('div');groveGuidance.className='grove-guidance';$('lab-help').before(groveGuidance);groveGuidance.append($('lab-help'));
  const groveQuests=document.createElement('div');groveQuests.className='grove-quests';groveQuests.setAttribute('aria-label','Rook Grove preview quests');groveQuests.innerHTML='<button data-grove-quest="rook-road">1 · Clear the road</button><button data-grove-quest="rook-capture">2 · Free the guard</button>';$('lab-title').before(groveQuests);
  groveQuests.onclick=e=>{const b=(e.target as HTMLElement).closest<HTMLButtonElement>('[data-grove-quest]');if(b&&!b.disabled)start(b.dataset.groveQuest);};
- const animator=new BoardMotion(board);
+ const animator=new BoardMotion(board,()=>{if(!root.hidden)render();});
  const groveMotion=new GroveMotion(board);
  const groveMotionButton=document.createElement('button');groveMotionButton.id='grove-motion';groveMotionButton.hidden=true;groveMotionButton.textContent='Reduce motion';$('lab-sound').after(groveMotionButton);
  let groveTier:'apprentice'|'guardian'|'master'='apprentice';
@@ -78,7 +78,7 @@ export function createLab(goOriginal:(level:number)=>void,voice:Voice,onClose:()
   $('lab-badges').textContent=(worldBadges()||'Badges mark learning milestones. Hints and Undo always help.')+(records[profile!]?.wins?` · ♔ ${records[profile!]!.wins} full-game win${records[profile!]!.wins===1?'':'s'}`:'');
   $('lab-title').textContent=session?.lesson?.title??(session?'Full Chess Game':'The next world waits');
   $('lab-story').textContent=session?.lesson?.story??(session?'Play a full game with Toothless watching. Keep your king safe!':unlocked()?'Choose your next quest.':'Complete the village bridge first.');
-  $('lab-status').textContent=promotionPick?'Choose a piece to finish your pawn move.':selected?'Piece selected. Choose a square.':describe();
+  $('lab-status').textContent=promotionPick?'Choose a piece to finish your pawn move.':animator.action?`${animator.action.side==='enemy'?'Their':'Your'} ${animator.action.role.toUpperCase()} ${animator.action.capture?'takes a guard':'moves'}.`:selected?'Piece selected. Choose a square.':describe();
   $<HTMLElement>('lab-promotion').hidden=!promotionPick;overlay.cancel();board.replaceChildren();
   if(session){const stage=session.lesson?.ladder,showTargets=!stage||stage==='discover'||stage==='apply'||stage==='plan'||visualHelp>0;
    const allowed=selected&&showTargets?session.chess.moves({square:selected,verbose:true}).map(m=>m.to):[];
@@ -88,7 +88,7 @@ export function createLab(goOriginal:(level:number)=>void,voice:Voice,onClose:()
     if(p?.type==='k'&&p.color===session.chess.turn()&&session.chess.isCheck())button.classList.add('checked');if(p)button.classList.add(p.color==='w'?'white-piece':'black-piece');
     if(allowed.includes(sq))button.classList.add('target');if(selected===sq)button.classList.add('selected');button.setAttribute('aria-pressed',String(selected===sq));if(!selected&&p?.color==='w'&&stage==='discover')button.classList.add('tap-cue');
     button.textContent=p?glyphs[p.color+p.type]:'';if(root.classList.contains('forest-campaign'))button.innerHTML=(p?actor(p.type,p.color==='b',ledger.evidence(profile!,p.type).owned):'')+`<span class="chess-bridge">${p?glyphs[p.color+p.type]:''}</span><span class="learning-coordinate">${sq}</span>`;if(isGrove())button.innerHTML=(p?groveActor(p.type,p.color==='b',groveTier):'')+`<span class="grove-square-label" aria-hidden="true">${sq}</span>`;button.setAttribute('aria-label',`${sq}${p?' '+(p.color==='w'?'White':'Black')+' '+p.type:''}`);
-    button.disabled=!!session.lesson&&!unlocked()||busy||!!promotionPick||session.finished||session.chess.isGameOver()||session.turn!=='w';button.onclick=()=>void choose(sq);board.append(button);
+    button.disabled=!!session.lesson&&!unlocked()||busy||animator.active||!!promotionPick||session.finished||session.chess.isGameOver()||session.turn!=='w';button.onclick=()=>void choose(sq);board.append(button);
    }
   }
   $<HTMLButtonElement>('lab-undo').disabled=!session||!demoActive&&!session.chess.history().length;$<HTMLButtonElement>('lab-hint').disabled=!session?.lesson||session.finished||demoActive;
@@ -103,7 +103,7 @@ export function createLab(goOriginal:(level:number)=>void,voice:Voice,onClose:()
   if(reduceMotion()){render();overlay.show(spec,'demo',true);voice.say(line);return;}
   render();overlay.show(spec,'hint',reduceMotion());voice.say(line);}
 
- async function choose(sq:Square){if(!session||!!session.lesson&&!unlocked()||busy||promotionPick||session.finished||session.chess.isGameOver()||session.turn!=='w')return;
+ async function choose(sq:Square){if(!session||!!session.lesson&&!unlocked()||busy||animator.active||promotionPick||session.finished||session.chess.isGameOver()||session.turn!=='w')return;
   const p=session.chess.get(sq);if(p?.color==='w'){overlay.cancel();selected=sq;feedback=session.lesson?.ladder==='independent'&&visualHelp===0?'Choose a landing square.':'Choose a glowing square.';voice.sound();voice.stop();render();if(session.lesson?.ladder==='discover'&&!demoShown)await showDemo(sq);return;}
   if(!selected){feedback='Tap one of your pieces first.';voice.say(feedback);render();return;}const opts=session.chess.moves({square:selected,verbose:true}).filter(m=>m.to===sq);if(!opts.length){feedback='That move does not work. Choose another square.';render();if(!reduceMotion())board.querySelector<HTMLButtonElement>(`button[aria-label^="${sq}"]`)?.animate([{boxShadow:'inset 0 0 0 5px #ffcc77'},{boxShadow:'none'}],{duration:350});voice.say(feedback);return;}
   overlay.cancel();if(opts.some(m=>m.promotion)){promotionPick={from:selected,to:sq};render();root.querySelector<HTMLButtonElement>('#lab-promotion [data-promotion="q"]')?.focus({preventScroll:true});return;}await playMove({from:selected,to:sq});}
@@ -111,10 +111,10 @@ export function createLab(goOriginal:(level:number)=>void,voice:Voice,onClose:()
   if(!session)return;const shots=animator.snapshot(),active=session,token=serial,grove=isGrove(),origin=board.querySelector<HTMLButtonElement>(`button[aria-label^="${moveInput.from}"]`)?.getBoundingClientRect(),capturedActor=grove?board.querySelector<HTMLElement>(`button[aria-label^="${moveInput.to}"] .grove-actor`)?.outerHTML:undefined;
   clearVisual();promotionPick=null;const move=session.play(moveInput);selected=null;if(!move){render();return;}
   feedback=session.finished&&session.lesson?'✦ '+lessonAchievement(session.lesson):move.captured?captureReflection:'';voice.sound(session.finished);save();render();if(!grove)void animator.play(move,shots,reduceMotion());
-  let flight=Promise.resolve(true);if(grove&&origin){const destination=board.querySelector<HTMLButtonElement>(`button[aria-label^="${move.to}"]`);if(destination)flight=groveMotion.move(origin,destination,move.captured?capturedActor:undefined,reduceMotion(),move.piece==='r'?rookTravelSquares(move.from,move.to):[],groveTier);}
+  let flight:Promise<unknown>=grove?Promise.resolve(true):animator.settled();if(grove&&origin){const destination=board.querySelector<HTMLButtonElement>(`button[aria-label^="${move.to}"]`);if(destination)flight=groveMotion.move(origin,destination,move.captured?capturedActor:undefined,reduceMotion(),move.piece==='r'?rookTravelSquares(move.from,move.to):[],groveTier);}
   if(session.finished){voice.say(session.lesson?lessonAchievement(session.lesson):'Game complete!');return;}
   if(move.captured)voice.say(captureReflection);if(session.chess.isGameOver())return;
-  if(session.chess.turn()==='b'){if(grove){busy=true;await flight;if(token!==serial||session!==active||root.hidden)return;}await reply();}
+  if(session.chess.turn()==='b'){busy=true;await flight;if(token!==serial||session!==active||root.hidden)return;await reply();}
  }
  async function reply(){if(!session)return;const active=session,token=++serial;busy=true;render();if(active.lesson){const shots=animator.snapshot(),before=active.chess.history().length;active.reply();busy=false;save();render();const moved=active.chess.history({verbose:true}).at(-1);if(!isGrove()&&moved&&active.chess.history().length>before)void animator.play(moved,shots,reduceMotion());return;}const move=await new Promise<InputMove|null>(resolve=>{worker??=newWorker();if(!worker){resolve(null);return;}pending={id:token,resolve};worker.postMessage({id:token,save:active.match.save(),tier:active.tier});});if(token!==serial||session!==active)return;const shots=animator.snapshot(),before=active.chess.history().length,fallback=active.chess.moves({verbose:true})[0];if(move||fallback)active.reply(move??input(fallback));busy=false;save();render();const moved=active.chess.history({verbose:true}).at(-1);if(!isGrove()&&moved&&active.chess.history().length>before)void animator.play(moved,shots,reduceMotion());}
  $('lab-close').onclick=close;

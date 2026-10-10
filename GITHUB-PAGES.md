@@ -1,19 +1,56 @@
-# GitHub Pages — Chessia learning and full game
+# GitHub Pages — Chessia
 
-The Pages target contains the12 original lessons,43 campaign quests, Forest school’s56 authored boards and optional early full chess. Runtime assets and existing recorded narration are bundled; most later VO uses device speech/text.
+Latest cumulative delivery: `chessia-attack-scale-upload-2026-10-10.zip`.
+It includes `source/`, the production build in `site/`, and verification in `reports/`.
+The quick-upload kit contains repository-root source batches with fewer than 100 files
+each and a separate static-site batch. Full artwork sources and QA reports remain in
+the full delivery, outside the quick source batches.
 
-1. Unzip the delivery package. Overlay the contents of source/ onto the existing Chessia repository, retaining unrelated files. Review the changes before committing them.
-2. Run pnpm install --frozen-lockfile, pnpm test and pnpm build:pages. The expected result is77 passing tests and output pages-dist/.
-3. To deploy through the existing workflow, choose GitHub Actions in repository Settings → Pages, then run Publish Chessia to GitHub Pages. The included workflow also publishes when main is pushed. No deployment was made by this task.
-4. The site/ folder in the delivery package is the already-built static result. Upload its contents, including index.html and all asset folders, to a static hosting root. A ZIP uploaded as one repository file will not be unpacked or hosted automatically.
+## Upload source to an existing repository
 
-Relative URLs support both a Pages root and repository subpaths. Test through HTTP, not by opening index.html as a file: the opponent Worker needs an HTTP origin. The optional ?preview=forest-adventure isolates local QA saves while retaining the whole forest journey; ?preview=rook-grove is the intentionally bounded two-quest art preview.
+1. Extract the full delivery and overlay the **contents of `source/`** onto the existing
+   repository. Alternatively, extract both quick source batches into the same folder;
+   their contents merge at the repository root. Preserve `chapter/src/`,
+   `chapter/public/`, and `.github/workflows/`. Do not flatten the files.
+2. For GitHub's browser uploader, upload one extracted source batch at a time. A ZIP
+   uploaded as one file is not automatically extracted. Use a temporary branch until
+   every source batch is uploaded and checked: the existing workflow publishes on a
+   push to `main`. The workflow is included in the last source batch.
+3. Run `pnpm install --frozen-lockfile`, `pnpm test`, and `pnpm build:pages`.
+   This delivery passed **84 tests**, TypeScript checking, and the production Pages
+   build. The output is `pages-dist/`.
+4. Choose GitHub Actions in Settings → Pages. The included `Publish Chessia to GitHub
+   Pages` workflow publishes on `main` pushes or manual dispatch. This task did not
+   push or deploy.
 
-Saves are per browser/origin and profile. Existing village/campaign keys are preserved; the learning journal and drafts are separate. Account sign-in, sync and automatic save transfer between domains are not implemented. Back up local progress before changing origins. See ENGINE-STATUS.md and the delivery reports for exact limits and asset budgets.
+## Upload an already-built site
 
-Full-game update: direct Play/Resume cards use actual saved thumbnails, a per-profile chessia-full-game-v1 store and bounded Worker AI. Legacy campaign/School full-game saves are copied without deleting old keys. New game retains a Previous game. Use the latest chessia-fullgame-upload-2026-10-10.zip delivery; reports/QA.md records validation and limitations.
+Use the **contents of `site/`**, or extract the quick kit's static-site batch at your
+hosting root. Keep `index.html` and its asset folders together. Do not mix the static
+batch into the source application's folders. Relative asset URLs support Pages roots
+and repository subpaths. Serve through HTTP: opening `index.html` as a file does not
+support the opponent Worker correctly.
 
-Latest polish delivery: chessia-fantasy-polish-upload-2026-10-10.zip includes all preceding changes plus Bishop/Queen SVG character skins, saved presentation preferences and visual action cues. Expected test count69. The static companion ZIP has the same site at archive root. Preferences key chessia-ui-preferences-v1 stores only validated per-profile view choices; no progress/reward fields. See reports/QA.md for tested Worker/no-voice recovery and vector/device/performance limits.
+## Included behavior
 
+- 55 journey lessons; Forest school has 24 topics, 96 authored positions, and 36
+  short-game starts. Early full chess remains available.
+- Full-game Play/Resume cards show actual saved thumbnails. Akin and Prin have separate
+  saves. New game retains the previous board; Undo returns the player/AI round.
+- All six roles use four existing raster poses. Capture holds the action pose for
+  330 ms within an 820 ms attack. A noninteractive victim snapshot stays through
+  contact, then fades. Reduced motion uses a static contact cue.
+- Stable per-role scale makes Pawn a smaller foot soldier and preserves Knight's
+  larger rider-and-horse silhouette. Approved friendly faces and computer masks remain.
 
-Latest completed bundle: chessia-curriculum-raster-upload-2026-10-10.zip. It contains source/, site/ and reports/ with original55 lessons, School24 topics/96 positions/36 short-game starts, all preceding full-game/worker/preferences fixes, and finished raster Rook/Bishop/Queen animations. Run pnpm test (77 tests) and pnpm build:pages from source/. The companion pages ZIP places production site files directly at archive root. New raster assets have relative Pages URLs, true alpha and per-tier shared frame anchors. See reports/UPLOAD.md, CURRICULUM-COVERAGE.md, ENGINE-GATE.md and ART-QA.md. QA previews and storage fixtures are excluded from site/.
+Runtime artwork and recorded narration are bundled; later narration uses device speech
+with visible text as its fallback. Saves are local to a browser/origin and profile;
+there is no account or cross-device sync. Existing village/campaign saves are preserved.
+Full games use `chessia-full-game-v1`, preferences use `chessia-ui-preferences-v1`, and
+School drafts are separate. Legacy full-game saves are copied without deleting old keys.
+Changing domains does not transfer local saves automatically.
+
+`?preview=forest-adventure` isolates QA saves while retaining the whole journey.
+`?preview=rook-grove` is the bounded two-quest art preview. Test fixtures, browser
+observers, and review pages are excluded from the production site. See `ENGINE-STATUS.md`
+and `reports/QA.md` for observations, timing evidence, and physical-device limits.

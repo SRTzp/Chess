@@ -1,17 +1,40 @@
-# Chessia
+# Chessia — ตำนานผู้พิทักษ์กระดาน
 
-A pixel-art chess learning adventure with 12 lessons: Pawn Valley and Knight Bridge.
+ต้นแบบเว็บเกมสอนหมากรุกภาษาไทยสำหรับเด็ก: 5 โลก × 5 ด่าน, 6 ตัวละครพิกเซล, คำใบ้, ยาย้อนตา, การปลดล็อกตามลำดับ, เหรียญรางวัล, ร้านสีชุด, และภารกิจประจำวัน
 
-## Publish the game
-After uploading all files, open Settings → Pages and choose GitHub Actions as Source. Then open Actions → Publish Chessia to GitHub Pages → Run workflow.
+## เปิดเล่น
+เปิด `dist/index.html` ในเบราว์เซอร์ หรือรัน `python3 -m http.server 4173 --directory dist` แล้วเปิด http://localhost:4173
 
-## Development
-Use Node.js 24 and the pnpm version in package.json.
+ไม่ต้องติดตั้งแพ็กเกจ ตัวเกมทำงานฝั่งเบราว์เซอร์ทั้งหมด ฟอนต์ Google Fonts เป็นส่วนเสริม ถ้าออฟไลน์จะใช้ฟอนต์ระบบ
+ความคืบหน้าบันทึกใน localStorage ของเบราว์เซอร์และที่อยู่เว็บไซต์นั้น ไม่ซิงก์ข้ามอุปกรณ์หรือจากตัวอย่างในเครื่องไปเว็บที่เผยแพร่
 
-```sh
-pnpm install --frozen-lockfile
-pnpm test
-pnpm build:pages
-```
+## สิ่งที่ทำงาน
+- บทเรียนเบี้ย ม้า บิชอป เรือ ควีน คิง การส้อม การเข้าป้อม และรุกจน
+- จุดแสดงตาเดินที่ถูกกติกา ตรวจตัวหมากขวางทางและความปลอดภัยของคิง
+- ศัตรูอยู่นิ่งในบทฝึกหัด แต่โจทย์รุกจนตรวจตาตอบที่ถูกกติกาทั้งหมด
+- ย้อนตาและคำใบ้ไม่จำกัด ไม่มีการแพ้ถาวร
+- ด่านใหม่ให้ 20 เหรียญครั้งเดียว ฝึกซ้ำได้โดยไม่ให้เหรียญซ้ำ
+- ภารกิจประจำวันเป็นโจทย์ควีนเดิม รับ 30 เหรียญได้วันละครั้งตามวันที่ในอุปกรณ์
+- ร้านขายสีชุด 3 แบบ แบบละ 60 เหรียญ ไม่มีเงินจริง ไม่มีระบบสุ่ม
+- ใช้เมาส์ สัมผัส หรือคีย์บอร์ด Tab / ลูกศร / Enter
 
-The playable build is in pages-dist/. All game artwork and 28 recorded narration clips are included. Chapter 2 uses device English speech. Akin and Prin progress is stored separately in the current browser, without cloud sync. Moving to a different domain does not transfer existing saves.
+## ขอบเขตต้นแบบ
+เป็นบทฝึกหัด ไม่ใช่เกมหมากรุกเต็มเกมกับ AI ไม่มีการสลับตาศัตรู, en passant, เสมอจากการเดินซ้ำ หรือกฎ 50 ตา
+ด่านเลื่อนขั้นเลือกควีนอัตโนมัติพร้อมสอนว่ากติกาจริงเลือกได้ Q/R/B/N
+ภาพตัวละครเป็น sprite คงที่ ไม่ใช่ชุดอนิเมชันเดิน/ต่อสู้หลายเฟรม
+ภาพสร้างด้วย imagegen built-in ไม่ได้สร้างผ่าน PixelLab; ดู ASSET-PROMPTS.md
+การบันทึกและเหรียญเป็นข้อมูล local สำหรับต้นแบบ ไม่มีระบบบัญชีหรือป้องกันการแก้ข้อมูลฝั่งผู้เล่น
+
+## โครงสร้าง
+- dist/index.html — โครงหน้าและ dialog
+- dist/style.css — หน้าตาและ responsive layout
+- dist/app.js — UI, progression, shop, daily quest, local save, sound
+- dist/game.js — กฎเดินหมากและข้อมูลด่าน
+- dist/assets/world.png — ภาพแผนที่
+- dist/assets/heroes.png — แผ่น sprite โปร่งใส 3×2 (P N B / R Q K)
+- tests/rules.cjs — เฉลย 25 ด่านและกรณีขอบของกติกา
+
+## ตรวจสอบ
+รัน `node tests/rules.cjs`
+ผ่านเฉลยครบ 25 ด่าน รวมรุกจนจริง 3 ตำแหน่ง, การขวางทางเบี้ย/เรือ, กินทแยง, ส้อม, เข้าป้อมผ่านช่องโจมตีไม่ได้, เรือเคยเดินเข้าป้อมไม่ได้, คิงติดกันไม่ได้, stalemate ไม่ใช่ checkmate และหมากถูกตรึง
+ตรวจ UI บน desktop และมือถือ 390px พร้อมทดลองเดินและย้อนตาบนเบราว์เซอร์แล้ว

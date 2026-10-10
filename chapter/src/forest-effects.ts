@@ -1,8 +1,10 @@
 import Phaser from 'phaser';
 import type {Cell} from './rules';
+import {attackTiming} from './attack-motion';
+import type {ForestRole} from './forest-adventure';
 import type {ForestMove,ForestTier} from './forest-adventure';
 type Point={x:number;y:number};
-type Mark={kind:'foot'|'fire'|'ring'|'slash'|'lightning'|'smoke'|'win'|'measure';at:Point;born:number;life:number;size:number;tier:ForestTier;reduced:boolean;from?:Point;bend?:Point;to?:Point};
+type Mark={kind:'foot'|'fire'|'ring'|'slash'|'lightning'|'smoke'|'win'|'measure'|'strike';role?:ForestRole;enemy?:boolean;at:Point;born:number;life:number;size:number;tier:ForestTier;reduced:boolean;from?:Point;bend?:Point;to?:Point};
 /** Bounded cosmetic layers. No legal moves, hit targets, turns or rewards are owned here. */
 export class ForestEffects{
  private ground:Phaser.GameObjects.Graphics;private air:Phaser.GameObjects.Graphics;private ambient:Phaser.GameObjects.Graphics;
@@ -20,10 +22,11 @@ export class ForestEffects{
   if(tier!=='apprentice'||move.role==='knight')this.add({kind:move.role==='knight'?'lightning':'ring',at,born:arrival,life:reduced?600:340,size:cell,tier,reduced});
   if(capture){this.add({kind:move.role==='pawn'?'slash':'smoke',at,from:point(move.from),to:at,born:arrival,life:reduced?600:360,size:cell,tier,reduced});}
  }
- capture(sprite:Phaser.GameObjects.Sprite,duration:number){
-  const ghost=this.clone(sprite).setDepth(5);sprite.setVisible(false);
-  this.scene.time.delayedCall(duration,()=>this.scene.tweens.add({targets:ghost,alpha:0,y:ghost.y-5,duration:220,onComplete:()=>this.removeGhost(ghost)}));
+ capture(sprite:Phaser.GameObjects.Sprite,duration:number,fade=220,reduced=false,offset:Point={x:0,y:0}){
+  const ghost=this.clone(sprite).setDepth(5);ghost.setPosition(ghost.x+offset.x,ghost.y+offset.y);sprite.setVisible(false);
+  this.scene.time.delayedCall(duration,()=>{if(reduced)this.removeGhost(ghost);else this.scene.tweens.add({targets:ghost,alpha:0,duration:fade,onComplete:()=>this.removeGhost(ghost)});});
  }
+ strike(from:Point,to:Point,role:ForestRole,cell:number,tier:ForestTier,enemy:boolean,reduced:boolean){this.add({kind:'strike',role,enemy,at:to,from,to,born:this.scene.time.now+(reduced?0:attackTiming.strike),life:reduced?360:attackTiming.recover-attackTiming.strike,size:cell,tier,reduced});}
  echo(sprite:Phaser.GameObjects.Sprite){const ghost=this.clone(sprite).setAlpha(.18).setTint(0xc1e9ed).setDepth(3.5);this.scene.tweens.add({targets:ghost,alpha:0,duration:180,onComplete:()=>this.removeGhost(ghost)});}
  private clone(sprite:Phaser.GameObjects.Sprite){const ghost=this.scene.add.image(sprite.x,sprite.y,sprite.texture.key,sprite.frame.name).setOrigin(sprite.originX,sprite.originY).setScale(sprite.scaleX,sprite.scaleY).setAngle(sprite.angle);this.ghosts.add(ghost);return ghost;}
  private removeGhost(ghost:Phaser.GameObjects.Image){this.ghosts.delete(ghost);ghost.destroy();}
@@ -43,6 +46,16 @@ export class ForestEffects{
    else if(m.kind==='slash'){if(m.reduced)g.lineStyle(2,0xc5edf0,.45).lineBetween(at.x-c*.13,at.y+c*.13,at.x+c*.13,at.y-c*.13);else{const dx=Math.sign(at.x-m.from!.x),dy=Math.sign(at.y-m.from!.y);g.lineStyle(2+level*.3,0xd3f4f0,alpha).lineBetween(at.x-dx*c*.25,at.y-dy*c*.25,at.x+dx*c*.25,at.y+dy*c*.25);}g.fillStyle(0xe8ead8,alpha*.5).fillCircle(at.x-c*.13,at.y+c*.18,c*.09);}
    else if(m.kind==='lightning'){g.lineStyle(2,0xc0e8f5,alpha).strokeEllipse(at.x,at.y+c*.3,c*.66,c*.22);for(let i=0;i<(m.reduced?2:level+1);i++){const x=at.x+(i-level/2)*c*.14;g.lineStyle(1.5,0xe0f3fd,alpha).beginPath().moveTo(x,at.y+c*.32).lineTo(x+c*.04,at.y+c*.18).lineTo(x-c*.03,at.y+c*.18).lineTo(x+c*.03,at.y+c*.06).strokePath();}}
    else if(m.kind==='smoke'){for(let i=0;i<(m.reduced?2:level+2);i++){const a=i*Math.PI*2/(level+2),r=(m.reduced?.18:.12+p*.18)*c;g.fillStyle(i%2?0xe8deb9:0xc5d8c7,alpha*.65).fillCircle(at.x+Math.cos(a)*r,at.y+Math.sin(a)*r,c*.07);}g.lineStyle(1.5,0xffe3a5,alpha).strokeCircle(at.x,at.y,c*.25);}
+   else if(m.kind==='strike'){
+    const a=m.from!,b=m.to!,dx=b.x-a.x,dy=b.y-a.y,length=Math.hypot(dx,dy)||1,ux=dx/length,uy=dy/length,px=-uy,py=ux,color=m.enemy?0xe8d1ff:0xfff0bd;
+    const point=(along:number,across:number)=>({x:a.x+ux*along*c+px*across*c,y:a.y+uy*along*c+py*across*c});
+    const line=(x1:number,y1:number,x2:number,y2:number,width:number)=>{const v=point(x1,y1),w=point(x2,y2);g.lineStyle(width+2,0x15291f,alpha).lineBetween(v.x,v.y,w.x,w.y);g.lineStyle(width,color,alpha).lineBetween(v.x,v.y,w.x,w.y);};
+    line(0,0,length/c,0,2.5);
+    if(m.role==='pawn'){line(.05,-.22,.35,0,2.5);line(.35,0,.05,.22,2.5);}
+    else if(m.role==='knight'){line(length/c-.15,-.09,length/c,0,2.5);line(length/c,0,length/c-.15,.09,2.5);}
+    else {g.lineStyle(2.5,color,alpha).strokeRect(b.x-c*.12,b.y-c*.12,c*.24,c*.24);}
+    if(m.reduced||now>=m.born+attackTiming.contact-attackTiming.strike){g.lineStyle(2,color,alpha).strokeCircle(b.x,b.y,c*.15);}
+   }
    else if(m.kind==='win'){g.lineStyle(2,0xffe397,alpha).strokeEllipse(at.x,at.y+c*.25,c*.85,c*.35);for(let i=0;i<(m.reduced?3:7);i++){const a=i*Math.PI*2/7,r=c*(.25+(m.reduced?0:p*.15));g.fillStyle(0xffeab7,alpha).fillRect(at.x+Math.cos(a)*r,at.y+Math.sin(a)*r,2,2);}}
    else if(m.kind==='measure'){const a=m.from!,bend=m.bend!,end=m.to!;g.lineStyle(2,0xaccdd6,alpha*.7).lineBetween(a.x,a.y,bend.x,bend.y);if(p>.5)g.lineBetween(bend.x,bend.y,end.x,end.y);}
   }

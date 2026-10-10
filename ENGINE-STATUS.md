@@ -49,3 +49,27 @@ SVG drafts are superseded at runtime by genuine raster Rook/Bishop/Queen tier/ac
 ## Animation completion — 2026-10-10
 
 Pawn/Knight/King real pose atlases and disposable visual travel are integrated. All80 tests, TypeScript and Pages build pass. Engine logic, AI tickets, original curriculum and reward rules are retained. This pass does not claim a new engine benchmark or Elo measurement. See the updated animation package QA/state coverage.
+
+## Attack readability and role scale — 2026-10-10
+
+Capture visuals share an 820 ms ready/approach/strike/contact/recover schedule.
+The action pose lasts 350–680 ms. A disposable victim snapshot remains fully visible
+through 600 ms and fades by 720 ms. Reduced motion holds one static contact pose for
+360 ms. En passant snapshots the captured pawn's square; promotion shows the outgoing
+Pawn before revealing its replacement. Visuals do not submit moves or award capture XP.
+Worker results wait for the human visual and retain existing session/ticket guards.
+
+One scale per role spans every pose/tier: Pawn .74, Knight .94, Rook/Bishop .84,
+Queen/King .98, with the shared cell foot baseline. This corrects the previous
+.94-every-role comparison where Pawn's silhouette was taller than the mounted Knight.
+Source art and approved friend/computer identities are retained.
+
+Validation: 84 tests passed; TypeScript and Pages build passed. Browser QA covers
+52 shared-controller cases at 375/390/768 px, actual School captures for all six player
+roles and five available enemy roles, actual Worker Queen recapture in full chess,
+and Phaser Pawn/Knight/Rook captures. Undo/restart/exit/Resume/New game/resize and
+reduced motion were exercised. Reports contain timed observations and screenshot
+sequences. Physical-device performance, FPS/Elo, and learning effectiveness were not
+established by this visual QA pass. Latest package:
+chessia-attack-scale-upload-2026-10-10.zip; browser batches contain fewer than 100 files
+and preserve repository-root paths.
