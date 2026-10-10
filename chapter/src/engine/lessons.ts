@@ -1,7 +1,7 @@
 import type {InputMove, OpponentTier} from './chess';
 import {curriculumLessons} from './curriculum';
 export type Ladder='discover'|'apply'|'independent'|'plan'|'mixed';
-export type Goal={kind:'move'|'capture'|'defend'|'check'|'escape-check'|'fork'|'pin'|'discovery'|'mate'|'castle'|'promotion'|'en-passant';move?:InputMove;square?:string;targets?:string[];piece?:'p'|'n'|'b'|'r'|'q'|'k'};
+export type Goal={kind:'move'|'capture'|'defend'|'check'|'escape-check'|'fork'|'pin'|'discovery'|'mate'|'castle'|'promotion'|'en-passant';move?:InputMove;accepted?:InputMove[];square?:string;targets?:string[];piece?:'p'|'n'|'b'|'r'|'q'|'k'};
 export type Lesson={id:string;title:string;story:string;fen:string;ladder:Ladder;pieceCount:number;choices:number;planningDepth:number;hintTier:0|1|2|3;goal:Goal;setup?:InputMove;setupGoal?:Goal;reply?:InputMove;hint:string[];boss?:boolean};
 const m=(from:InputMove['from'],to:InputMove['to'],promotion?:InputMove['promotion']):InputMove=>({from,to,...(promotion?{promotion}:{})});
 // Every FEN is a legal chess position. Goals inspect the resulting board; chess.js decides legality.

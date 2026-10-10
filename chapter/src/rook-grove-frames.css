@@ -1,0 +1,7 @@
+/* Alpha-bounded frame placement; source pixels remain untouched. */
+.grove-role-rook.grove-friend .grove-rook{--sprite-w:72.20805%;--sprite-h:76.61290%;--sprite-left:13.89597%;--sprite-top:13.70968%;--atlas-w:273.20261%;--atlas-h:257.49487%;--atlas-x:15.72327%;--atlas-y:11.47327%;}
+.grove-role-rook.grove-enemy .grove-rook{--sprite-w:72.58821%;--sprite-h:76.61290%;--sprite-left:13.70589%;--sprite-top:13.70968%;--atlas-w:248.31683%;--atlas-h:235.27205%;--atlas-x:89.31909%;--atlas-y:86.96255%;}
+[data-grove-tier=guardian] .grove-role-rook.grove-friend .grove-rook{--sprite-w:75.00000%;--sprite-h:70.67308%;--sprite-left:12.50000%;--sprite-top:19.64950%;--atlas-w:241.15385%;--atlas-h:255.91837%;--atlas-x:92.23433%;--atlas-y:11.38743%;}
+[data-grove-tier=master] .grove-role-rook.grove-friend .grove-rook{--sprite-w:75.00000%;--sprite-h:69.34211%;--sprite-left:12.50000%;--sprite-top:20.98048%;--atlas-w:220.00000%;--atlas-h:237.95066%;--atlas-x:8.91813%;--atlas-y:87.20770%;}
+.grove-role-king.grove-friend .grove-king{--sprite-w:73.78536%;--sprite-h:76.61290%;--sprite-left:13.10732%;--sprite-top:13.70968%;--atlas-w:228.83212%;--atlas-h:220.38664%;--atlas-x:8.78187%;--atlas-y:7.00730%;}
+.grove-role-king.grove-enemy .grove-king{--sprite-w:73.39275%;--sprite-h:76.61290%;--sprite-left:13.30363%;--sprite-top:13.70968%;--atlas-w:229.25046%;--atlas-h:219.61471%;--atlas-x:93.06931%;--atlas-y:7.02782%;}

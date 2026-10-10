@@ -1,0 +1,73 @@
+@import './rook-grove-frames.css';
+/* Forest ruins preview. The environment has no tiles, actors, arrows or UI baked in. */
+.rook-grove{--grove-gold:#ffe7a0;--grove-wood:#594027;background:#142d1e!important}
+.grove-canopy{display:none;position:fixed;inset:0;pointer-events:none;z-index:-1;background:linear-gradient(#09241677,#0b211eaa),url('/rook-grove-v2/environment.webp') center/cover}.rook-grove .grove-canopy{display:block}
+.rook-grove .lab-shell{position:relative;max-width:650px;padding:10px 8px 18px}
+.rook-grove .lab-shell header{position:absolute;right:14px;top:63px;z-index:8;padding:0;min-height:0;background:none;border:0}.rook-grove .lab-shell header>div{display:none}
+.rook-grove .lab-shell header button{width:44px;min-height:44px;padding:4px;font-size:22px;background:linear-gradient(#725033,#493321);border:2px solid #c1a568;border-radius:5px;box-shadow:0 2px 0 #271e12}
+.rook-grove #lab-profile,.rook-grove #lab-badges,.rook-grove #lab-lessons,.rook-grove .lab-small{display:none}
+.rook-grove .lab-layout{display:block;margin:0}
+.rook-grove .lab-play{position:relative;width:min(100%,calc((100svh - 220px)/1.5),560px);margin:auto;padding:0;background:none;border:0;box-shadow:none}
+.grove-quests{display:none}.rook-grove .grove-quests{display:flex;gap:8px;margin-bottom:8px}
+.grove-quests button{flex:1;min-height:44px;font-size:11px;padding:7px 5px;color:#f5edce;background:linear-gradient(#503d28,#352c1e);border:1px solid #a59a65;border-radius:5px}.grove-quests button[aria-pressed=true]{color:#fff0b1;border-color:#f2ce73;box-shadow:inset 0 0 0 1px #f2ce7355}
+.rook-grove #lab-title,.rook-grove #lab-story,.rook-grove #lab-status{position:absolute;width:1px!important;height:1px!important;margin:0!important;padding:0;overflow:hidden;clip-path:inset(50%)}
+.grove-banner,.grove-dragon{display:none}
+.grove-stage{position:relative}.rook-grove .grove-stage{position:relative;aspect-ratio:2/3;margin:0;padding:0;border:0;border-radius:0;background:url('/rook-grove-v2/environment.webp') center/100% 100%;box-shadow:0 8px 28px #05190e77;isolation:isolate}
+.rook-grove .grove-banner{display:flex;position:absolute;z-index:6;top:2%;left:18%;width:64%;min-height:10%;flex-direction:column;justify-content:center;text-align:center;gap:3px;padding:6px;color:#ffedb7;background:linear-gradient(#624728,#38291a);border:3px ridge #b4a56b;box-shadow:0 3px 0 #252614cc;text-shadow:0 2px #211d11;pointer-events:none}
+.grove-banner strong{font-size:clamp(15px,3.8vw,25px);letter-spacing:1.5px}.grove-banner small{font-size:clamp(10px,2.4vw,14px);line-height:1.3}
+.rook-grove .grove-dragon{display:block;position:absolute;left:1%;bottom:1%;width:20%;height:12%;z-index:3;background:url('/characters/dragon-a-v3.png') 0 0/400% 400%;image-rendering:pixelated;pointer-events:none;filter:drop-shadow(0 3px 2px #123323)}
+.rook-grove #lab-board{position:absolute;left:8%;top:31%;width:84%;height:auto;aspect-ratio:1;margin:0;isolation:isolate;background:none;box-shadow:none}
+.rook-grove .lab-square,.rook-grove .lab-square.light,.rook-grove .lab-square.dark{position:relative;background:none!important;box-shadow:none;border:0;overflow:visible;padding:0;touch-action:manipulation}
+.rook-grove .lab-square:before{content:'';position:absolute;inset:0;background:url('/rook-grove-v2/stone.webp') center/100% 100%;pointer-events:none;filter:drop-shadow(0 2px 1px #26372766)}
+.rook-grove .lab-square:nth-child(3n):before{transform:rotate(90deg)}.rook-grove .lab-square:nth-child(5n):before{transform:rotate(180deg)}
+.rook-grove .lab-square:disabled{opacity:1}.rook-grove .lab-square.selected{outline:2px solid #ffe393;outline-offset:-4px;border-radius:8px;z-index:5;box-shadow:inset 0 0 8px #ffdf6177}
+.rook-grove .lab-square.target:after{width:13%;z-index:3;background:#fff0a3;border:1px solid #9d772e;box-shadow:0 0 7px #ffcf51;pointer-events:none}
+.rook-grove .lab-square.selected:after{font-size:11px;right:3px;bottom:3px;z-index:7;background:#ffe29a;color:#4b351a}
+.rook-grove .lab-square.tap-cue:after{z-index:7;top:2px;right:3px;font-size:15px}
+.grove-actor{position:absolute;inset:-12%;width:124%;height:124%;pointer-events:none;z-index:4;transform-origin:center;filter:drop-shadow(0 2px 1px #17281b)}
+.grove-raster{display:block;position:absolute;inset:0;background-image:url('/rook-grove-v2/actors.webp');background-size:200% 200%;background-repeat:no-repeat;image-rendering:auto}
+.grove-rook{background-image:url('/rook-grove-v2/rook-upgrades.webp')}.grove-king{background-image:url('/rook-grove-v2/kings.webp')}
+.grove-friend .grove-rook{background-position:0 0;transform:translate(-6.35%,-1%)}.grove-enemy .grove-rook{background-position:100% 100%;transform:translate(2.73%,8.85%) scale(.903)}.grove-friend .grove-king{background-position:0 0;transform:translate(-3.03%,-.53%) scale(.844)}.grove-enemy .grove-king{background-position:100% 0;transform:translate(1.2%,-.65%) scale(.841)}
+[data-grove-tier=guardian] .grove-friend .grove-rook{background-position:100% 0;transform:translate(.63%,-1%) scale(.99)}
+[data-grove-tier=master] .grove-friend .grove-rook{background-position:0 100%;transform:translate(-4.83%,8.3%) scale(.918);transform-origin:center}
+.grove-piece-mark{position:absolute;right:12%;bottom:12%;font:10px Georgia,serif;line-height:1;background:#ddbf72;color:#332d1c;border:1px solid #74643a;border-radius:3px;padding:1px;text-shadow:none}
+.grove-enemy .grove-piece-mark{background:#42204d;color:#f0c5ff;border-color:#ae73be}
+.grove-square-label{position:absolute;top:6px;left:6px;font:6px system-ui;color:#ecead588;text-shadow:0 1px #3b4b2b;pointer-events:none;z-index:1}
+.rook-grove .teaching-overlay{z-index:6;filter:drop-shadow(0 0 3px #ffbf46)}.rook-grove .teaching-segment{stroke-width:3;stroke:#ffe995;stroke-dasharray:7 4}.rook-grove .teaching-landing{stroke-width:2;fill:#ffdc8822}.rook-grove .teaching-symbol{font-size:14px}
+.grove-captured{position:absolute;inset:0;pointer-events:none;z-index:3}
+.grove-fire{position:absolute;inset:7%;z-index:2;pointer-events:none;opacity:0;display:flex;align-items:flex-end;justify-content:center;gap:3px;box-shadow:inset 0 -8px 12px #ffbc4666;border-radius:20%}
+.grove-fire i{display:block;width:13%;height:25%;border-radius:55% 45% 55% 25%;background:linear-gradient(#fffbc3,#ffdc64,#e9a12c88);box-shadow:0 0 6px #ffd05e;transform:rotate(12deg)}.grove-fire i:nth-child(2){height:37%;transform:rotate(-9deg)}.grove-fire b{position:absolute;top:17%;right:13%;color:#ffe5a1;font:9px system-ui}
+.grove-fire-quiet{opacity:.45;border-bottom:2px solid #f3d87a;box-shadow:none}.grove-fire-quiet>*{display:none}
+.grove-landing{position:absolute;inset:6%;border:2px solid #ffe7a0;border-radius:25%;box-shadow:0 0 9px #ffc84f77;pointer-events:none;z-index:5;opacity:0}.grove-landing-quiet{opacity:.6;box-shadow:none}
+.grove-burst{position:absolute;inset:8%;display:flex;align-items:center;justify-content:center;gap:2px;pointer-events:none;z-index:7;opacity:0;color:#fff0b6;font:22px system-ui}
+.grove-burst i{width:19%;height:20%;background:#d4e0bf99;border-radius:50%;filter:blur(2px)}.grove-burst b{font-weight:400}.grove-burst-quiet{opacity:.6;inset:auto 4px 4px auto;font-size:12px}.grove-burst-quiet i{display:none}
+.rook-grove #lab-repeat-demo{display:none!important}
+.rook-grove .lab-actions{display:flex;gap:7px;justify-content:flex-end;margin-top:7px;min-height:44px;flex-wrap:wrap}
+.rook-grove .lab-actions button{min-height:44px;padding:7px 13px;font-size:12px;background:linear-gradient(#755634,#493622);border:2px ridge #bdac6e;color:#ffefb6;border-radius:5px}
+.rook-grove .lab-actions #lab-next{background:#d5b56c!important;color:#2a351f!important}
+.rook-grove .lab-actions #lab-listen,.rook-grove .lab-actions #lab-sound,.rook-grove .lab-actions #grove-motion,.rook-grove .lab-actions #lab-restart{display:none}
+.rook-grove.grove-options-open .lab-actions #lab-listen,.rook-grove.grove-options-open .lab-actions #lab-sound,.rook-grove.grove-options-open .lab-actions #grove-motion,.rook-grove.grove-options-open .lab-actions #lab-restart{display:block}
+.grove-guidance{display:contents}.rook-grove .grove-guidance{display:flex;align-items:center;gap:8px;background:linear-gradient(#163423ef,#10291cef);border:3px ridge #9b9b61;padding:7px 10px;margin-top:8px;min-height:75px;box-shadow:0 3px 0 #142415}
+.rook-grove .grove-guidance:before{content:'';display:block;flex-shrink:0;width:46px;height:46px;background:url('/characters/dragon-a-v3.png') 0 0/400% 400%;image-rendering:pixelated}
+.rook-grove #lab-help{font-size:13px;line-height:1.5;color:#fff0b6;min-width:0;height:3em;flex:1;margin:0;overflow:auto}
+@media(min-width:1050px){.rook-grove .lab-shell{max-width:650px}.rook-grove .lab-play{width:min(100%,calc((100svh - 220px)/1.5),560px)}}
+@media(max-width:700px){.rook-grove .lab-shell{padding:calc(6px + env(safe-area-inset-top,0px)) max(6px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(6px,env(safe-area-inset-left,0px))}.rook-grove .lab-shell header{right:8px;top:61px}.rook-grove .grove-banner{left:17%;width:66%}.grove-square-label{font-size:5px;top:5px;left:5px}.grove-piece-mark{font-size:8px}}
+@media(prefers-reduced-motion:reduce){.grove-fire,.grove-landing,.grove-burst{transition:none!important;animation:none!important}}
+.grove-reduced .grove-fire,.grove-reduced .grove-landing,.grove-reduced .grove-burst{transition:none!important;animation:none!important}
+/* A fourth control may appear on victory without adding a row or moving the field. */
+.rook-grove .lab-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.rook-grove .lab-actions button{min-width:0;width:100%;height:44px;line-height:1.15;font-size:11px;padding:5px 4px}
+
+/* Preview-only cosmetic tiers. Never grant mastery or change chess state. */
+.rook-grove .lab-actions #grove-tier{display:none}.rook-grove.grove-options-open .lab-actions #grove-tier{display:block}
+[data-grove-tier=guardian] .grove-friend .grove-rook{filter:drop-shadow(0 0 2px #f3d97e77)}
+[data-grove-tier=master] .grove-friend .grove-rook{filter:drop-shadow(0 0 2px #f3d97eaa)}
+[data-grove-tier=master] .grove-friend.grove-role-rook:after{content:'◇';position:absolute;left:37%;bottom:5%;width:28%;text-align:center;font:11px system-ui;color:#fff0b6;text-shadow:0 0 3px #edbd57;z-index:2;pointer-events:none}
+[data-grove-tier=apprentice] .grove-fire i{height:17%}[data-grove-tier=apprentice] .grove-fire i:nth-child(2){height:25%}
+[data-grove-tier=master] .grove-fire{box-shadow:inset 0 -9px 14px #ffbc4688}[data-grove-tier=master] .grove-fire i:nth-child(2){height:43%}
+[data-grove-tier=master] .grove-burst{font-size:26px}[data-grove-tier=master] .grove-burst em{position:absolute;inset:0;text-align:center;color:#ffeab9;font:32px system-ui;opacity:.65}
+[data-grove-tier=master] .grove-burst-quiet{font-size:14px}[data-grove-tier=master] .grove-burst-quiet em{display:none}
+.grove-afterimage{position:absolute;inset:0;pointer-events:none;z-index:3;opacity:0;filter:sepia(.3) saturate(.6)}
+.grove-afterimage .grove-piece-mark,.grove-afterimage .grove-actor:before,.grove-afterimage .grove-actor:after{display:none}
+
+.grove-raster{inset:auto;left:var(--sprite-left);top:var(--sprite-top);width:var(--sprite-w);height:var(--sprite-h);background-size:var(--atlas-w) var(--atlas-h)!important;background-position:var(--atlas-x) var(--atlas-y)!important;transform:none!important}

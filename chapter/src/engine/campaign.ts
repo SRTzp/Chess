@@ -20,3 +20,9 @@ export const villageComplete=(oldDone:boolean[])=>oldDone.length===12&&oldDone.e
 export const canOpenLesson=(index:number,oldDone:boolean[],done:string[])=>villageComplete(oldDone)&&index>=0&&index<lessons.length&&(index===0||done.includes(lessons[index-1].id));
 export const nextLesson=(done:string[])=>lessons.find(l=>!done.includes(l.id))??null;
 export function earnedBadges(done:string[]){const badges:string[]=[];let begin=0;for(const world of worlds){if(lessons.slice(begin,world.end).every(l=>done.includes(l.id)))badges.push(world.icon+' '+world.name);begin=world.end;}return badges;}
+
+// Replaying captures/quests cannot farm milestones; only verified quest completion is credited.
+export function recordLessonCompletion(progress:CampaignProgress,session:Session):boolean{
+ if(!session.finished||!session.lesson||progress.done.includes(session.lesson.id))return false;
+ progress.done.push(session.lesson.id);return true;
+}

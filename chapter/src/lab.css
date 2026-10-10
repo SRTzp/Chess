@@ -17,3 +17,5 @@
 
 #chess-lab-panel{overflow-anchor:none}
 #lab-repeat-demo[hidden]{display:block!important;visibility:hidden;pointer-events:none}
+
+.lab-plan-guide{padding:10px;border:1px solid #8a9569;border-radius:8px;font-size:12px;line-height:1.5}.lab-plan-guide summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:bold}.lab-plan-guide p{margin:8px 0}.lab-plan-guide strong{color:#ffe39b}

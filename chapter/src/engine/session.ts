@@ -24,9 +24,11 @@ export class Session{
  play(m:InputMove):Move|null{if(this.finished||this.turn!=='w')return null;this.match.beginRound();const ply=this.chess.history().length;const before=new Chess(this.chess.fen());const move=this.match.move(m);if(!move){this.match.undoRound();return null;}if(this.lesson){if(this.lesson.setupGoal&&ply===0)this.setupSatisfied=this.goalMet(before,this.chess,move,this.lesson.setupGoal);else if((!this.lesson.setupGoal||ply===2&&this.setupSatisfied)&&this.goalMet(before,this.chess,move,this.lesson.goal))this.finished=true;}return move;}
  private goalMet(before:Chess,after:Chess,move:Move,g:Goal):boolean{
   switch(g.kind){
-   case 'move':return (g.square?move.to===g.square:!!g.move&&same(input(move),g.move))&&(!g.piece||move.piece===g.piece);
+   case 'move':if(g.accepted)return g.accepted.some(m=>same(input(move),m));return (g.square?move.to===g.square:!!g.move&&same(input(move),g.move))&&(!g.piece||move.piece===g.piece);
    case 'capture':return !!move.captured&&(!g.square||move.to===g.square)&&(!g.piece||move.piece===g.piece);
-   case 'defend':return !!g.square&&after.get(g.square as typeof move.to)?.color===move.color&&after.attackers(g.square as typeof move.to,move.color).includes(move.to);
+   case 'defend':{if(!g.square)return false;const target=g.square as typeof move.to;if(after.get(target)?.color!==move.color||!before.attackers(target,'b').length||!after.attackers(target,move.color).includes(move.to)||after.attackers(move.to,'b').length)return false;
+    // Defending can mean a favourable recapture, rather than making capture impossible.
+    const attacks=after.moves({verbose:true}).filter(m=>m.to===target&&m.captured);return attacks.every(m=>{const reply=new Chess(after.fen());reply.move(input(m));return reply.moves({verbose:true}).some(r=>r.from===move.to&&r.to===target&&r.captured);});}
    case 'check':return after.isCheck();
    case 'escape-check':return before.isCheck()&&move.color==='w';
    case 'castle':return move.flags.includes('k')||move.flags.includes('q');

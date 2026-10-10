@@ -40,3 +40,5 @@ footer{padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));padding-left:
 /* Feedback must not resize the playing field as text wraps. Long hints remain scrollable. */
 .dialogue{min-width:0}.dialogue p{height:4.35em;overflow:auto;overscroll-behavior:contain}
 footer{flex-shrink:0}#line:focus-visible{outline:2px solid #ffe396;outline-offset:2px}
+
+.reduced-motion *::before,.reduced-motion *::after{animation:none!important;transition:none!important}
