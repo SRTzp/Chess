@@ -1,14 +1,12 @@
-# GitHub Pages
+# GitHub Pages — Chessia learning MVP
 
-This target publishes the current 12-lesson adventure directly at the repository's Pages URL. It does not require Sites hosting or a backend. All game images and recorded audio are bundled.
+The Pages target contains the12 original lessons,43 campaign quests, Forest school’s56 authored boards and optional early full chess. Runtime assets and existing recorded narration are bundled; most later VO uses device speech/text.
 
-1. Push the project to the chosen GitHub repository on `main`.
-2. In repository Settings → Pages, choose **GitHub Actions** as the source.
-3. Run **Publish Chessia to GitHub Pages** from Actions (or push to main).
-4. Open the URL shown by the deployment job.
+1. Unzip the delivery package. Overlay the contents of source/ onto the existing Chessia repository, retaining unrelated files. Review the changes before committing them.
+2. Run pnpm install --frozen-lockfile, pnpm test and pnpm build:pages. The expected result is60 passing tests and output pages-dist/.
+3. To deploy through the existing workflow, choose GitHub Actions in repository Settings → Pages, then run Publish Chessia to GitHub Pages. The included workflow also publishes when main is pushed. No deployment was made by this task.
+4. The site/ folder in the delivery package is the already-built static result. Upload its contents, including index.html and all asset folders, to a static hosting root. A ZIP uploaded as one repository file will not be unpacked or hosted automatically.
 
-Local verification: `pnpm install --frozen-lockfile`, `pnpm test`, `pnpm build:pages`. Output: `pages-dist/`. The relative asset URLs support a repository subdirectory without knowing its name in advance.
+Relative URLs support both a Pages root and repository subpaths. Test through HTTP, not by opening index.html as a file: the opponent Worker needs an HTTP origin. The optional ?preview=forest-adventure isolates local QA saves while retaining the whole forest journey; ?preview=rook-grove is the intentionally bounded two-quest art preview.
 
-Pages is normally publicly accessible. GitHub Free supports Pages from public repositories; paid plans also support private source repositories, but private source does not by itself make the game private.
-
-Akin and Prin progress remains in each device/browser's local storage. Saves from the previous Sites domain do not automatically transfer to the new GitHub Pages domain. New chapter narration uses device English speech; chapter 1 retains recorded narration.
+Saves are per browser/origin and profile. Existing village/campaign keys are preserved; the learning journal and drafts are separate. Account sign-in, sync and automatic save transfer between domains are not implemented. Back up local progress before changing origins. See ENGINE-STATUS.md and the delivery reports for exact limits and asset budgets.

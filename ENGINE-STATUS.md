@@ -1,36 +1,28 @@
-# Chessia campaign status
+# Chessia — bounded learning MVP status (2026-10-10)
 
-Local implementation and verification completed 2026-10-05. No push or deployment was made.
+The A–D implementation is complete locally. It is a bounded authored learning MVP with explicit asset and validation limits; no commit, push or deployment was made in this completion run.
 
-## What is playable
+-55 lessons remain:12 original Pawn/Knight quests and43 campaign quests. The map keeps prerequisites; optional full chess is now available early. Authored safe king/development alternatives and recapture-based defence replace exact-square-only judgements for those outcomes.
+-Forest school adds56 finite authored positions across6 roles and8 tactic/strategy categories. Discover, changed practice, first-attempt independent use, actual enemy replies, bounded multi-turn promotion/weak-pawn games, due/manual reviews and early full games are playable.
+-Separate validated per-profile/per-skill local evidence records seen FENs, shown support, bounded receipts, review dates and owned cosmetics. Hints, Undo, invalid landings and repeat boards retain rewards but cannot create new independent evidence. Configurable thresholds are practice1 / independent role variants2 / tactic or strategy new outcome1. They are learning signals, not certified mastery or Elo.
+-Legacy saves and already-owned Pawn/Knight gear are preserved. Existing campaign badges remain journey milestones. New gear belongs to each role; tactics and plans have separate cosmetic badges and scene accents. No XP, gacha, economy, kill farming or chess-stat buffs.
+-Forest is the default visual route. Rook uses a block tower silhouette; King uses a crown, cape and staff. Original Rook golem skins remain selectable in School. Pawn/Knight use existing raster tiers; King uses existing poses/accent tiers; Bishop/Queen use explicit chess-vector fallbacks. Standard symbols and8×8 coordinates bridge fantasy and real chess.
+-School loads on demand, forest skips unused classic art preloads, and the village scene pauses behind the map/school. Direct knight flights and effects cancel on Undo/resize/reduced motion; promotion uses four in-page choices. No voice wait blocks input. Late narration still uses device English speech/text.
 
-- The original 12 Pawn Valley and Knight Bridge lessons remain in place. The Adventure Map continues with 43 new quests, then unlocks a full chess game with gentle, steady, and challenge opponents.
-- New worlds teach rook, bishop, queen (called the winged light guardian in the story), king safety, check, castling, promotion, en passant, fork, pin, discovered attack, checkmate, stalemate, and opening basics. The Mist Boss is an independent checkmate quest. The two-step fork includes a legal enemy reply and a useful capture.
-- Akin and Prin have separate local saves. The `chessia-pawn-chapter-v1` saves and original levels are preserved. Existing `chessia-lab-v1` progress is migrated into `chessia-campaign-v2` where it matches the new sequence; old preview achievements are retained separately. Earlier 37-quest campaign saves retain their unlocks when the six inserted lessons are credited during migration.
-- Hints, Undo, replay, badges, sound toggle, reduced motion, and an in-page four-choice promotion picker are available. Visual paths mark straight moves, diagonal moves, captures, castling, and the knight's two-then-one L shape. The knight's ghost makes one direct jump; measuring corners are never treated as occupied squares. Discover lessons show a demo that can be replayed or skipped. Apply lessons preview the path and require a second tap on the landing square. Independent lessons begin without target markers or a path; Help restores markers first and then the path. Demo, voice, and preview state cancel on Undo, level changes, map navigation, resize, and reduced motion changes. Hints after a move use the current board. There is no timer or hint penalty. Capture text is nonviolent. New quests use English text, chess symbols, and device speech as a placeholder; no new art or recorded audio was added.
+## Verification
 
-## Engine and validation
+60/60 tests pass: original50 baseline plus10 meaningful new strategic/evidence/mini-game tests. All43 campaign witnesses remain valid. All56 new trial witnesses are playable through Match, meet the goal and survive the real bounded opponent reply; legal negative moves fail. Tests cover journal dedup/isolation/support/review/legacy retention, validated drafts and corrupt saves, round Undo, multi-turn mini-games and all four promotion choices. TypeScript and Pages production build pass.
 
-- `chapter/src/engine/chess.ts` wraps chess.js 1.4.0 for legal moves and endings. Save/restore validates the starting FEN, exact move history, and round boundaries. `session.ts` evaluates goal outcomes from legal positions, replays saved sessions, and rejects invalid completion flags.
-- The opponent runs in a Worker with bounded search: gentle depth 1 / 700 nodes, steady depth 2 / 5,000 nodes, challenge depth 3 / 18,000 nodes. Illegal responses fall back to legal moves. These settings are not Elo ratings.
-- Every new quest has a legal witness replayed by automated tests against its actual reply policy. Pin goals require a new pin created by the moved piece, and countercheck counts as escaping a check when the player's move is legal. Queen diagonal, check capture/block, and multi-move opening mini games fill curriculum gaps. Piece count, legal choice count, planning depth, ladder stage, and hint tier are recorded. Choice count alone is not a calibrated difficulty measure.
+Browser QA completed the Pawn learning loop, Knight Help/Undo and blockers, all3 tactics and5 strategic categories, Bishop/Queen moves, due review, saved resume, profile isolation, early full chess, campaign king/development alternatives and forest map navigation. Stage-access fixtures were used for selected campaign checks; this does not claim a new manual replay of all55 lessons. Final console reads had no errors. A stale/mismatched browser image was excluded and final game screenshots were recaptured on a fresh tab with saved move count0.
 
-## Verification performed
+School viewport cells:390×844 ~46.55px;375×667 ~44.75px;768×1024 and1440×900 ~69.75px;844×390 landscape ~46.5px. Original Knight cells ~46.75px at390×844. No horizontal overflow was observed. QA storage and viewport overrides were restored.
 
-- `pnpm test`: 44/44 passing at the final run. Tests cover edge rules, draws and repetition, promotion alternatives, castling rights, en passant expiry, save corruption, Undo, bounded AI search, equivalent goals, negative tactic moves, adaptive hints, countercheck, old save migration, all 43 quest witnesses, visual move geometry, blockers, and demo cancellation.
-- `pnpm build` and `pnpm build:pages`: passed. Vite reports a large chapter JS chunk warning; this is a size warning, not a build failure.
-- Browser UI: played all 12 original lessons and the original 37 new quests from a clean Akin profile, then entered full game. After the review fixes, replayed the six inserted lessons and revised fork/guard quests, verified unrelated king moves do not finish a pin, hints follow a changed board, independent legal-square glow appears after requesting help, and old saves still unlock full game. Also verified AI response, Undo during and after search, save/reload, Akin/Prin separation, and map unlocks. The promotion UI was fixed after the browser exposed an unsupported native prompt. Final browser console showed no errors.
-- Visual-aid browser checks: original knight Discover showed two measuring segments, a direct-jump ghost, and replay; a knight jumped over a friendly piece and still completed the lesson. Original and new Apply quests previewed without moving a piece until the second tap. Original and new Independent quests showed no path initially, target markers at Help 1, and a path at Help 2. New Discover replay worked, and Undo canceled an active original demo. Reduced motion showed static segments without a ghost. Responsive checks at 390px and 768px showed aligned overlay endpoints and no horizontal overflow. Browser console had no errors during these checks. This is a layout and interaction sanity check, not a full device/browser matrix.
+## Remaining limits
 
-Child enjoyment and calibrated difficulty still need observation with children. Opponent playing strength and slow-device search time have not been measured. No hosted deployment was tested.
+The bank is finite and the thresholds are uncalibrated. No claims of complete chess coverage, child engagement, long-term retention or playing strength. Bishop/Queen fantasy raster art and most later recorded VO remain unfinished; functional fallbacks are visible. Physical iOS/Android, slow devices/networks and a full accessibility/device matrix were not tested. Short legacy village layouts can have smaller squares; School provides the compact8×8 practice view.
 
-## Reproduce locally
+Initial forest images total ~7.47MiB before cache/compression; the Phaser bundle remains ~1.6MB minified/~390KB gzip and Vite warns about chunk size. School is a small lazy chunk, and King/original Rook art/audio load when used. This is not a slow-phone performance guarantee.
 
-```sh
-PATH=/Users/peach/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH pnpm test
-PATH=/Users/peach/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH pnpm build
-PATH=/Users/peach/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH pnpm build:pages
-PATH=/Users/peach/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin:$PATH pnpm chapter
-```
+## Build and upload
 
-Open the chapter URL printed by Vite, choose a profile, then select **Adventure Map**. Completing the original 12 lessons unlocks the new quests.
+Run pnpm install --frozen-lockfile, pnpm test, pnpm build:pages in the existing repository. Relative asset URLs support Pages repository subpaths. Use GITHUB-PAGES.md for deployment instructions; uploads and deployment are user actions. Reports include coverage-55.csv, variant-bank.json, QA.md, completion/checkpoint documents, exact asset budgets and SHA256 manifests in the dated delivery folder.
