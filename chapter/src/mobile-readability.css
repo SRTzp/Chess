@@ -1,0 +1,110 @@
+/* Keep the board inside the visible Safari viewport, including rotation and browser bars. */
+@media(max-width:700px){
+ .forest-adventure #app{height:100dvh;min-height:0}
+ .forest-adventure #app>header{min-height:0;gap:3px;padding-inline:max(4px,env(safe-area-inset-left));grid-template-columns:minmax(0,1fr) repeat(5,44px)}
+ .forest-adventure #app>header .brand{min-width:0;font-size:13px;gap:3px;letter-spacing:0}
+ .forest-adventure #app>header .brand small{display:none}
+ .forest-adventure #progress{gap:3px}
+ .forest-adventure #app>footer{min-height:0;padding-top:4px;gap:4px}
+ .forest-adventure .dialogue p{height:2.9em;overflow:auto;font-size:13px}
+ .forest-adventure .dragon-face{height:40px;width:44px}
+ .forest-adventure #world .chapter-tag{top:4px;left:10%;width:80%;padding:4px;border-width:2px}
+ .forest-adventure #world .chapter-tag h1{font-size:14px}
+ .full-room.full-room,.learning-room.learning-room{height:100dvh}
+ .full-room.full-room header{min-height:58px;padding-top:max(4px,env(safe-area-inset-top))}
+ .full-room.full-room footer{min-height:0;padding:4px max(6px,env(safe-area-inset-right)) max(6px,env(safe-area-inset-bottom))}
+ .full-status{height:40px;font-size:13px}
+ .full-room.full-room .full-board{width:min(100vw,calc(100dvh - 164px - env(safe-area-inset-top) - env(safe-area-inset-bottom)),600px)}
+ .full-room.full-room aside{top:66px;max-height:calc(100dvh - 78px)}
+ .learning-room.learning-room footer{min-height:0;padding:4px 6px max(6px,env(safe-area-inset-bottom))}
+ .learning-line{height:40px}
+ .learning-room.learning-room .learning-board{width:min(100vw,calc(100dvh - 232px - env(safe-area-inset-top) - env(safe-area-inset-bottom)),560px)}
+ .full-coordinate,.learning-coordinate{font-size:9px;font-weight:600;background:#ecedc3b3;border-radius:2px;padding:0 1px;pointer-events:none}
+ .forest-campaign #lab-board{width:min(100%,calc(100dvh - 285px),520px)}
+ .forest-campaign #lab-story,.forest-campaign #lab-status{height:auto;min-height:1.5em;max-height:3em}
+}
+@media(max-height:500px) and (orientation:landscape){
+ .forest-adventure #app{height:100dvh;min-height:0;max-width:none;display:grid;grid-template-columns:minmax(0,1fr) 184px;grid-template-rows:100px 48px minmax(0,1fr);grid-template-areas:'world header' 'world chapters' 'world footer'}
+ .forest-adventure #app>header{grid-area:header;display:flex;flex-wrap:wrap;gap:2px;padding:2px;min-height:0;overflow:auto}
+ .forest-adventure #app>header .brand,.forest-adventure #progress{display:none}
+ .forest-adventure #app>header>button{min-width:44px;flex:1}
+ .forest-adventure .chapter-tabs{grid-area:chapters;gap:2px;padding:2px}
+ .forest-adventure .chapter-tabs button{flex:1;min-width:0;padding:2px;font-size:10px}
+ .forest-adventure #world{grid-area:world}
+ .forest-adventure #app>footer{grid-area:footer;display:block;min-height:0;padding:4px max(4px,env(safe-area-inset-right)) 4px 4px;overflow:auto}
+ .forest-adventure .dragon-help{float:left;width:44px;min-height:44px;margin-right:4px}
+ .forest-adventure .dragon-face{display:none}
+ .forest-adventure .dialogue p{font-size:12px;height:4.35em;overflow:auto}
+ .forest-adventure .actions{grid-template-columns:1fr 1fr;gap:3px;clear:both}
+ .full-room.full-room{height:100dvh;grid-template-columns:minmax(0,1fr) 184px;grid-template-rows:66px minmax(0,1fr)}
+ .full-room.full-room .full-board{width:min(calc(100dvh - 8px),calc(100vw - 192px - env(safe-area-inset-left) - env(safe-area-inset-right)))}
+ .full-room.full-room header{gap:2px;align-items:center;padding:2px;min-height:0}
+ .full-turn{grid-template-columns:1fr;min-width:0;font-size:12px;column-gap:0;padding:2px}
+ .full-avatar{display:none}
+ .full-room.full-room button{min-width:44px;min-height:44px;font-size:20px}
+ .full-room.full-room footer{min-height:0;padding:4px;overflow:auto}
+ .full-controls{gap:4px;display:grid;grid-template-columns:1fr 1fr}
+ .full-controls button{min-width:0}
+ .full-status{height:auto;min-height:40px;max-height:70px}
+ .full-room.full-room aside{right:4px;top:66px;width:min(310px,90vw)}
+ .learning-room.learning-room{height:100dvh;grid-template-columns:minmax(0,1fr) 184px}
+ .learning-room.learning-room .learning-board{width:min(calc(100dvh - 8px),calc(100vw - 192px - env(safe-area-inset-left) - env(safe-area-inset-right)))}
+ .learning-room.learning-room header{padding:2px;gap:2px;font-size:12px}
+ .learning-room.learning-room aside{width:min(310px,90vw)}
+}
+
+/* Compact play controls on phones and tablets; secondary actions stay in the menu. */
+.adventure-menu-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-bottom:12px}
+#options select{width:100%;min-height:44px;margin-top:10px}
+#options details summary{cursor:pointer;min-height:44px;padding:10px 0}
+@media(max-width:1024px){
+ .forest-adventure #app{min-height:0;height:100dvh}
+ .forest-adventure #app>header{grid-template-columns:minmax(0,1fr) 44px 44px;min-height:52px;padding:4px max(4px,env(safe-area-inset-right)) 4px max(4px,env(safe-area-inset-left))}
+ .forest-adventure #app>header #chess-lab{grid-column:2;grid-row:1}
+ .forest-adventure #app>header #settings{grid-column:3;grid-row:1}
+ .forest-adventure #app>header #progress,.forest-adventure #app>header #forest-school,.forest-adventure #app>header #full-chess,.forest-adventure #app>header #sound,.forest-adventure .chapter-tabs{display:none}
+ .forest-adventure #app>footer{display:grid;grid-template-columns:44px 44px minmax(0,1fr);align-items:center;min-height:60px;gap:5px;padding:4px max(6px,env(safe-area-inset-right)) max(6px,env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left))}
+ .forest-adventure .dragon-help{grid-column:1;grid-row:1;width:44px;height:44px;min-height:44px;padding:2px}
+ .forest-adventure .dragon-help:before{content:'?';font:bold 24px system-ui}
+ .forest-adventure .dragon-face,.forest-adventure .dragon-help small,.forest-adventure .dialogue small{display:none}
+ .forest-adventure .dialogue{grid-column:3;grid-row:1}
+ .forest-adventure .dialogue p{height:2.9em;overflow:auto;font-size:13px;margin:0}
+ .forest-adventure .actions{display:contents}
+ .forest-adventure .actions #undo{grid-column:2;grid-row:1;width:44px;min-height:44px;height:44px}
+ .forest-adventure .actions #undo small,.forest-adventure .actions #replay,.forest-adventure .actions #danger,.forest-adventure .actions #camp{display:none}
+ .full-room.full-room header{min-height:52px;padding:4px max(4px,env(safe-area-inset-right)) 4px max(4px,env(safe-area-inset-left))}
+ .full-room.full-room .full-turn{grid-template-columns:32px 1fr;min-width:100px;padding:2px 4px;column-gap:5px}
+ .full-room.full-room .full-avatar{width:32px;height:32px}
+ .full-room.full-room footer{min-height:0;padding:4px max(6px,env(safe-area-inset-right)) max(6px,env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left))}
+ .full-room.full-room .full-status{height:32px;line-height:16px;font-size:12px}
+ .full-room.full-room .full-controls button{height:44px;min-height:44px;min-width:44px;padding:2px;font-size:22px}
+ .full-room.full-room .full-controls button small{display:none}
+ .full-room.full-room .full-board{width:min(100vw,calc(100dvh - 132px - env(safe-area-inset-top) - env(safe-area-inset-bottom)),800px)}
+ .learning-room.learning-room footer{min-height:0;padding:4px 6px max(6px,env(safe-area-inset-bottom))}
+ .learning-room.learning-room footer>div{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .learning-room.learning-room .learning-board{width:min(100vw,calc(100dvh - 210px - env(safe-area-inset-top) - env(safe-area-inset-bottom)),800px)}
+ .learning-room.learning-room .learning-line{height:40px}
+ .learning-room.learning-room aside button{min-height:44px;margin:4px}
+}
+@media(max-height:500px) and (orientation:landscape){
+ .forest-adventure #app{grid-template-rows:52px minmax(0,1fr);grid-template-areas:'world header' 'world footer'}
+ .forest-adventure #app>header{display:grid;grid-template-columns:1fr 1fr;align-content:start;min-height:0}
+ .forest-adventure #app>header #chess-lab{grid-column:1}.forest-adventure #app>header #settings{grid-column:2}
+ .forest-adventure #app>footer{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:64px 44px;align-content:start}
+ .forest-adventure .dialogue{grid-column:1/-1;grid-row:1}.forest-adventure .dialogue p{height:4.35em}
+ .forest-adventure .dragon-help{grid-column:1;grid-row:2;float:none}
+ .forest-adventure .actions #undo{grid-column:2;grid-row:2}
+ .full-room.full-room .full-board{width:min(calc(100dvh - 8px),calc(100vw - 192px - env(safe-area-inset-left) - env(safe-area-inset-right)))}
+ .full-room.full-room .full-turn{grid-template-columns:1fr;min-width:0}
+ .full-room.full-room .full-avatar{display:none}
+ .learning-room.learning-room .learning-board{width:min(calc(100dvh - 8px),calc(100vw - 192px - env(safe-area-inset-left) - env(safe-area-inset-right)))}
+}
+@media(max-width:1024px){
+ .full-room.full-room header{padding-top:max(4px,env(safe-area-inset-top))}
+ .full-room.full-room header button{min-width:44px;min-height:44px;height:44px;padding:2px}
+ .full-room.full-room header button small{display:none}
+ .full-room.full-room .full-board{width:min(100vw,calc(100dvh - 160px - env(safe-area-inset-top) - env(safe-area-inset-bottom)),800px)}
+}
+@media(max-height:500px) and (orientation:landscape){
+ .full-room.full-room .full-board{width:min(calc(100dvh - 8px),calc(100vw - 192px - env(safe-area-inset-left) - env(safe-area-inset-right)))}
+}

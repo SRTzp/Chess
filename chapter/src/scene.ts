@@ -8,7 +8,7 @@ import {forestTier,forestMove} from './forest-adventure';
 import {Atmosphere} from '../../shrine/src/atmosphere';
 import {boardCells,boardSize,kind,goalCell,forkTargets,legal,threats,same,type State,type Cell,type Piece,type Move} from './rules';
 export class Garden extends Phaser.Scene{
- forest=false;progress:readonly boolean[]=[];gear:Partial<Record<'pawn'|'knight'|'rook','apprentice'|'guardian'|'master'>>={};
+ renderRatio=1;forest=false;progress:readonly boolean[]=[];gear:Partial<Record<'pawn'|'knight'|'rook','apprentice'|'guardian'|'master'>>={};
  ready!:()=>void;layout!:(x:number,y:number,c:number)=>void;reduced=false;
  private backdrop?:Phaser.GameObjects.Image;private cast?:ForestCast;private forestFx?:ForestEffects;private tiles:Phaser.GameObjects.Image[]=[];
  private bg!:Phaser.GameObjects.Image;private stones!:Phaser.GameObjects.Graphics;private shadows!:Phaser.GameObjects.Graphics;
@@ -21,9 +21,9 @@ export class Garden extends Phaser.Scene{
  dragonCue(action:'flap'|'hint'|'happy'){this.dragon?.cue(action);}
  point(p:Cell){return{x:this.ox+(p.x+.5)*this.cell,y:this.oy+(p.y+.5)*this.cell};}
  sync(s:State,selected:string|null,help:number,danger:boolean,best:Move|null=null){this.dataState=structuredClone(s);this.selected=selected;this.help=help;this.danger=danger;this.best=best;this.draw();}
- private label(x:number,y:number,text:string,color='#fff0bd',size=17){this.labels.push(this.add.text(x,y,text,{fontFamily:'sans-serif',fontSize:size,color,fontStyle:'bold'}).setOrigin(.5).setDepth(this.forest?7:3));}
- private draw(){if(!this.dataState||!this.stones)return;const s=this.dataState,w=this.scale.width,h=this.scale.height,{width:WIDTH,height:HEIGHT}=boardSize(s.level),cells=boardCells(s.level);const stageWidth=Math.min(w,h/1.5,560),stageHeight=stageWidth*1.5,stageX=(w-stageWidth)/2,stageY=(h-stageHeight)/2;
- if(this.forest){this.cell=Math.min((w-16)/WIDTH,(h-144)/HEIGHT,65);this.ox=(w-this.cell*WIDTH)/2;this.oy=(h-this.cell*HEIGHT)/2;this.backdrop!.setPosition(w/2,h/2).setScale(Math.max(w/1024,h/1536));this.bg.setPosition(w/2,h/2).setDisplaySize(stageWidth,stageHeight);this.forestFx!.layout(this.ox,this.oy,this.cell*WIDTH,this.cell*HEIGHT);}else{this.cell=Math.min((w-38)/WIDTH,(h-125)/HEIGHT,77);this.ox=(w-this.cell*WIDTH)/2;this.oy=83+(h-105-this.cell*HEIGHT)/2;this.bg.setPosition(w/2,h/2).setScale(Math.max(w/1536,h/1024));}
+ private label(x:number,y:number,text:string,color='#fff0bd',size=17){this.labels.push(this.add.text(x,y,text,{fontFamily:'sans-serif',fontSize:size,color,fontStyle:'bold'}).setResolution(this.renderRatio).setOrigin(.5).setDepth(this.forest?7:3));}
+ private draw(){if(!this.dataState||!this.stones)return;this.cameras.main.setOrigin(0,0).setZoom(this.renderRatio);const s=this.dataState,w=this.scale.width/this.renderRatio,h=this.scale.height/this.renderRatio,{width:WIDTH,height:HEIGHT}=boardSize(s.level),cells=boardCells(s.level);const stageWidth=Math.min(w,h/1.5,560),stageHeight=stageWidth*1.5,stageX=(w-stageWidth)/2,stageY=(h-stageHeight)/2;
+ if(this.forest){this.cell=Math.min((w-16)/WIDTH,(h-80)/HEIGHT,matchMedia('(max-width:1024px)').matches?90:65);this.ox=(w-this.cell*WIDTH)/2;this.oy=(h-this.cell*HEIGHT)/2;this.backdrop!.setPosition(w/2,h/2).setScale(Math.max(w/1024,h/1536));this.bg.setPosition(w/2,h/2).setDisplaySize(stageWidth,stageHeight);this.forestFx!.layout(this.ox,this.oy,this.cell*WIDTH,this.cell*HEIGHT);}else{this.cell=Math.min((w-38)/WIDTH,(h-125)/HEIGHT,77);this.ox=(w-this.cell*WIDTH)/2;this.oy=83+(h-105-this.cell*HEIGHT)/2;this.bg.setPosition(w/2,h/2).setScale(Math.max(w/1536,h/1024));}
  this.layout(this.ox,this.oy,this.cell);this.atmosphere.layout(this.ox,this.oy,this.cell*HEIGHT);this.stones.clear();this.labels.forEach(x=>x.destroy());this.labels=[];
  const piece=s.pieces.find(p=>p.id===this.selected),moves=piece?legal(s,piece):[],danger=threats(s);
  this.tiles.forEach((t,i)=>t.setVisible(this.forest&&i<cells.length));
