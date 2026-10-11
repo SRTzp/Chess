@@ -1,3 +1,4 @@
+import {microTrials} from './microsteps';
 import {extraTrials} from './plans-bank';
 import {isPassedPawn} from './pawn-outcomes';
 import {Session} from '../engine/session';
@@ -43,7 +44,7 @@ authored('team-space-2','team',[['d2','wp'],['b1','wn'],['g1','wn'],['e7','bp']]
 authored('team-space-3','team',[['e2','wp'],['c1','wb'],['f1','wb'],['d7','bp']],{from:'e2',to:'e4'},'Open a central road for your friends.');
 for(const [i,king,to] of [[1,'d3','e3'],[2,'e3','f3'],[3,'f3','g3']] as const){const c=new Chess();c.clear();c.put({type:'k',color:'b'},'h8');c.put({type:'k',color:'w'},king);c.put({type:'r',color:'b'},'a4');c.put({type:'p',color:'w'},'h2');trials.push({id:'prevent-'+i,skill:'prevent',fen:c.fen(),accepted:[{from:king,to}],instruction:'Stay off the rook road.',concept:'Look where they could attack before moving.'});}
 for(const [i,pawn,king,to] of [[1,'d4','c3','c4'],[2,'c4','b3','b4'],[3,'f4','e3','e4']] as const){const c=new Chess();c.clear();c.put({type:'k',color:'b'},'h8');c.put({type:'k',color:'w'},king);c.put({type:'p',color:'w'},pawn);trials.push({id:'passer-'+i,skill:'passer',fen:c.fen(),accepted:[{from:king,to}],instruction:'Bring the king beside the pawn safely.',concept:'A safe active king can escort a passed pawn.'});}
-trials.push(...extraTrials);
+trials.push(...extraTrials,...microTrials);
 export function trialMet(t:Trial,move:InputMove,c:Chess){
  const played=c.history({verbose:true}).at(-1);if(!played||played.color!=='w'||played.from!==move.from||played.to!==move.to||played.after!==c.fen())return false;
  const before=new Chess(played.before);

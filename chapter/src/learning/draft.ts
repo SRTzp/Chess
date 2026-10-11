@@ -1,10 +1,11 @@
+import type {AttemptState} from './context-attempt';
 import {Match,Chess,input} from '../engine/chess';
 import {MiniGame} from './mini';
 import {trials,trialMet,type Trial} from './bank';
 import {skills,type Skill} from './ledger';
 export const phases=['discover','practice','independent','mini','review','game'] as const;
 export type Phase=typeof phases[number];
-export type Draft={version:1;role:Skill;phase:Phase;trialId:string;match:unknown;mini?:unknown;support:boolean;novel:boolean;done:boolean;index:number;shown?:string[]};
+export type Draft={version:1;role:Skill;phase:Phase;trialId:string;match:unknown;mini?:unknown;support:boolean;novel:boolean;done:boolean;index:number;shown?:string[];lessonFlow?:boolean;firstCommit?:boolean;attempt?:AttemptState};
 export function restoreDraft(raw:unknown){try{
  const v=raw as Draft;if(v?.version!==1||!skills.includes(v.role)||!phases.includes(v.phase)||!Number.isInteger(v.index)||v.index<0||v.index>100||![v.support,v.novel,v.done].every(b=>typeof b==='boolean'))return null;
  const trial=trials.find(t=>t.id===v.trialId&&t.skill===v.role);if(!trial)return null;

@@ -108,3 +108,5 @@
 @media(max-height:500px) and (orientation:landscape){
  .full-room.full-room .full-board{width:min(calc(100dvh - 8px),calc(100vw - 192px - env(safe-area-inset-left) - env(safe-area-inset-right)))}
 }
+
+#cells .cell.adventure-choice:after{content:attr(data-plan);position:absolute;inset:5% 5% auto;pointer-events:none;color:#ffe8a6;background:#173e30d9;border-radius:50%;font:bold clamp(16px,3vw,23px) system-ui;text-align:center;width:30px;margin:auto}#cells .cell.plan-preview:after{width:auto;border-radius:4px;background:#254e37ef}#cells .cell.plan-preview{outline:3px solid #ffebad;outline-offset:-4px}
