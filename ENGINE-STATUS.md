@@ -73,3 +73,31 @@ sequences. Physical-device performance, FPS/Elo, and learning effectiveness were
 established by this visual QA pass. Latest package:
 chessia-attack-scale-upload-2026-10-10.zip; browser batches contain fewer than 100 files
 and preserve repository-root paths.
+
+
+## Map, parent reset and mobile clarity — 11 October 2026
+
+Adventure Map no longer redirects to Full Chess from a legacy saved game; full-game
+Resume remains available through Play. Parent reset selects Akin, Prin or both and
+clears village/campaign/legacy/learning/full-game progress plus drafts in the current
+mode, preserving other profiles and view preferences. The page reloads after reset
+to avoid stale in-memory saves. Storage writes roll back on failure.
+
+Forest canvas uses smooth filtering and a capped 2x Retina backing store with logical
+CSS coordinates for hit targets, ResizeObserver sizing and camera zoom from origin.
+DOM character atlases use smooth image rendering on all screens. The original pixel
+art and role scale ratios remain unchanged. Compact phone HUDs and dynamic viewport
+sizing enlarge the board; landscape places controls beside the playfield.
+
+Validation: 88 tests, TypeScript and Pages build pass. Isolated localhost:4274 QA
+checked 375x667 DPR2, 667x375 DPR2, 390x844 DPR3 and 1440x900 DPR2; Pawn movement,
+Full Chess e2-e4 plus one AI reply, rotation, Practice entry/exit, legacy Akin Map and
+reset isolation passed. No browser errors/warnings observed. Production profiles
+were not reset. Physical iPhone/Safari and device performance remain unverified.
+
+
+## 2026-10-11 final recovery and compact mobile pass
+
+Known-board recovery is separate evidence from novelty: two successful unaided reviews on distinct familiar variants, separated by the persisted one-day review schedule, can recover master gear after the finite bank was exhausted with Help. Early, assisted, failed, duplicate, and same-day reviews cannot farm this route. Novel evidence is preserved unchanged; previous ownership is preserved. Thresholds are product heuristics, not validated developmental assessments. Role goal stars measure movement execution; they do not demonstrate independent strategic landing-choice mastery.
+
+Mobile/tablet secondary controls move into menus; original playfield on 375x667 grows from 384 to 552 CSS px, full board on 768x1024 grows from 600 to 768 CSS px. Retina renderer uses capped DPR 2 with smooth scaling; source art remains pixel art. Full player move/one AI reply/Undo and original Pawn movement/rotation verified on isolated localhost QA. Physical Safari performance remains untested. Final automated suite: 92 tests, TypeScript and Pages build. No deployment or production profile reset performed.

@@ -17,7 +17,7 @@ the full delivery, outside the quick source batches.
    every source batch is uploaded and checked: the existing workflow publishes on a
    push to `main`. The workflow is included in the last source batch.
 3. Run `pnpm install --frozen-lockfile`, `pnpm test`, and `pnpm build:pages`.
-   This delivery passed **84 tests**, TypeScript checking, and the production Pages
+   This delivery passed **92 tests**, TypeScript checking, and the production Pages
    build. The output is `pages-dist/`.
 4. Choose GitHub Actions in Settings → Pages. The included `Publish Chessia to GitHub
    Pages` workflow publishes on `main` pushes or manual dispatch. This task did not
