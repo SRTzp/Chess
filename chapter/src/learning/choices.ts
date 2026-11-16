@@ -24,3 +24,13 @@ export {PlanPreview,shouldGuide} from '../plan-preview';
 export function limitPlans(plans:AdventurePlan[],limit:number){if(plans.length<=limit)return plans;const mission=plans.find(p=>p.purpose==='mission')!;return [mission,...plans.filter(p=>p!==mission).slice(0,Math.max(0,limit-1))].sort((a,b)=>a.move.to.localeCompare(b.move.to));}
 
 export const plansForMission=(trial:Trial,journey?:Journey)=>journey?limitPlans(authorPlans(trial),microConfig.choicesPerStep[Math.min(journey.step,4)]):authorPlans(trial);
+
+// Re-derive teaching routes from the live legal position, including restored drafts.
+// No mission route is a normal recovery state, not a reason to keep old beacons.
+export function guidanceForPosition(trial:Trial,current:Chess,journey?:Journey,blocked=false){
+ let plans:AdventurePlan[]=[];
+ if(!blocked&&current.turn()==='w'&&!current.isGameOver()){
+  try{plans=plansForMission({...trial,fen:current.fen()},journey);}catch{}
+ }
+ return {plans,recover:!blocked&&current.history().length>0&&plans.length===0};
+}

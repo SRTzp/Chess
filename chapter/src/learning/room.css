@@ -14,3 +14,5 @@
 .learning-cell.chess-symbols.friend{color:#fff8d7;text-shadow:0 1px 2px #163424,1px 0 #163424}.learning-cell.chess-symbols.enemy{color:#241632;text-shadow:0 1px #e6c9ec}
 
 .adventure-choice{box-shadow:inset 0 0 0 3px #efd995}.plan-beacon{position:absolute;left:50%;top:15%;transform:translateX(-50%);border-radius:50%;background:#173a2ce8;color:#ffe59c;font-size:clamp(16px,4vw,25px);line-height:1.1;pointer-events:none}.plan-preview{box-shadow:inset 0 0 0 4px #ffeeb3}.plan-confirm{position:absolute;bottom:8%;left:0;right:0;background:#224a32ed;color:#ffeec0;font:bold 11px system-ui;pointer-events:none}.learning-cell.selected .journey-sprite{filter:drop-shadow(0 0 4px #ffe598)}
+
+.learning-field{position:relative}.learning-room [data-recover]{position:absolute;z-index:5;bottom:10px;left:50%;transform:translateX(-50%);min-width:130px;min-height:56px;background:#fff0b8;color:#243e2b;border:3px solid #f6cc59;box-shadow:0 3px 14px #102a24c9;font-weight:bold}.learning-room [data-recover] span{font-size:32px;vertical-align:middle;margin-right:8px}.learning-room.needs-recovery [data-undo]{border:3px solid #ffe39a;background:#755622;color:#fff4cc}
